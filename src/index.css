@@ -1,0 +1,262 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-color-destructive-foreground: var(--color-destructive-foreground);
+}
+
+:root {
+  --destructive-foreground: oklch(1 0 0);
+}
+
+.dark {
+  --destructive-foreground: oklch(1 0 0);
+}
+
+@theme {
+  --color-brand-primary: #11625A;
+  --color-brand-light: #ECF1F4;
+
+  --color-primary-50: #e8f5f4;
+  --color-primary-100: #d1ebe8;
+  --color-primary-200: #a3d7d1;
+  --color-primary-300: #75c3ba;
+  --color-primary-400: #47af83;
+  --color-primary-500: #11625A;
+  --color-primary-600: #0e504a;
+  --color-primary-700: #0a3d38;
+  --color-primary-800: #072a27;
+  --color-primary-900: #031715;
+
+  --color-gold-400: #fbbf24;
+  --color-gold-500: #f59e0b;
+  --color-gold-600: #d97706;
+
+  --color-sky-start: #0ea5e9;
+  --color-sky-end: #38bdf8;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--text-muted);
+  --color-accent-muted: var(--accent-muted);
+
+  --animate-gradient-x: gradient-x 15s ease infinite;
+  --animate-fade-in: fade-in 0.5s ease-out forwards;
+  --animate-slide-up: slide-up 0.5s ease-out forwards;
+  --animate-marquee: marquee var(--duration) linear infinite;
+  --animate-shine: shine 1.5s ease-out infinite;
+
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  --animate-marquee: marquee var(--duration, 30s) linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(calc(-100% - var(--gap, 1rem)));
+    }
+  }
+
+  @keyframes gradient-x {
+
+    0%,
+    100% {
+      background-size: 200% 200%;
+      background-position: left center;
+    }
+
+    50% {
+      background-size: 200% 200%;
+      background-position: right center;
+    }
+  }
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-up {
+    0% {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes moving-banner {
+    from {
+      background-position: 0% 0;
+    }
+
+    to {
+      background-position: 100% 0;
+    }
+  }
+
+  --animate-moving-banner: moving-banner 20s linear infinite;
+}
+
+@layer components {
+  .rainbow-banner-gradient-1 {
+    mask-image: linear-gradient(to bottom, white, transparent),
+      radial-gradient(circle at top center, white, transparent);
+    mask-composite: intersect;
+    animation: moving-banner 16s linear infinite reverse;
+    --start: rgba(0, 87, 255, 0.5);
+    --mid: rgba(255, 0, 166, 0.77);
+    --end: rgba(255, 77, 0, 0.4);
+    --via: rgba(164, 255, 68, 0.4);
+    background-image: repeating-linear-gradient(60deg,
+        var(--end),
+        var(--start) 2%,
+        var(--start) 5%,
+        transparent 8%,
+        transparent 14%,
+        var(--via) 18%,
+        var(--via) 22%,
+        var(--mid) 28%,
+        var(--mid) 30%,
+        var(--via) 34%,
+        var(--via) 36%,
+        transparent,
+        var(--end) calc(50% - 12px));
+    background-size: 200% 100%;
+    mix-blend-mode: difference;
+  }
+
+  .rainbow-banner-gradient-2 {
+    mask-image: linear-gradient(to bottom, white, transparent),
+      radial-gradient(circle at top center, white, transparent);
+    mask-composite: intersect;
+    animation: moving-banner 20s linear infinite;
+    --start: rgba(255, 120, 120, 0.5);
+    --mid: rgba(36, 188, 255, 0.4);
+    --end: rgba(64, 0, 255, 0.51);
+    --via: rgba(255, 89, 0, 0.56);
+    background-image: repeating-linear-gradient(45deg,
+        var(--end),
+        var(--start) 4%,
+        var(--start) 8%,
+        transparent 9%,
+        transparent 14%,
+        var(--mid) 16%,
+        var(--mid) 20%,
+        transparent,
+        var(--via) 36%,
+        var(--via) 40%,
+        transparent 42%,
+        var(--end) 46%,
+        var(--end) calc(50% - 16.8px));
+    background-size: 200% 100%;
+    mix-blend-mode: color-dodge;
+  }
+}
+
+:root {
+  --background: #FFFFFF;
+  --foreground: #030014;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-dark-bg: rgba(255, 255, 255, 0.8);
+  --glass-dark-border: rgba(0, 0, 0, 0.05);
+  --hero-gradient-start: rgba(17, 98, 90, 0.1);
+  --hero-gradient-end: rgba(255, 255, 255, 1);
+  --text-muted: #64748b;
+  --accent-muted: rgba(17, 98, 90, 0.05);
+  color-scheme: light;
+}
+
+.dark {
+  --background: #030014;
+  --foreground: #ECF1F4;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-dark-bg: rgba(0, 0, 0, 0.4);
+  --glass-dark-border: rgba(255, 255, 255, 0.05);
+  --hero-gradient-start: rgba(17, 98, 90, 0.2);
+  --hero-gradient-end: rgba(3, 0, 20, 1);
+  --text-muted: #94a3b8;
+  --accent-muted: rgba(255, 255, 255, 0.02);
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  @apply overflow-x-hidden font-sans relative;
+}
+
+/* Pro Noise Overlay */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.03;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-dark {
+  background: var(--glass-dark-bg);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-dark-border);
+}
+
+.hero-gradient {
+  background: radial-gradient(circle at 50% 50%, var(--hero-gradient-start) 0%, var(--hero-gradient-end) 70%);
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-[#ECF1F4];
+}
+
+.dark .text-gradient {
+  @apply from-primary-400 to-[#ECF1F4];
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-500/20 rounded-full hover:bg-primary-500/40 transition-colors;
+}
