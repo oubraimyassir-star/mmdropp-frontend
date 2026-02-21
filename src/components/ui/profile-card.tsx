@@ -21,8 +21,6 @@ export function ProfileCard({
 }: ProfileCardProps) {
     const [isFollowing, setIsFollowing] = useState(false)
     const [expProgress, setExpProgress] = useState(0)
-    const [animatedLikes, setAnimatedLikes] = useState(0)
-    const [animatedPosts, setAnimatedPosts] = useState(0)
 
     // Animate experience bar
     useEffect(() => {
@@ -43,40 +41,9 @@ export function ProfileCard({
 
     // Animate counters
     useEffect(() => {
-        const duration = 2000
-        const steps = 60
-        const stepDuration = duration / steps
-
-        const likesIncrement = likes / steps
-        const postsIncrement = posts / steps
-
-        let currentStep = 0
-
-        const timer = setTimeout(() => {
-            const interval = setInterval(() => {
-                currentStep++
-                setAnimatedLikes(Math.min(Math.floor(likesIncrement * currentStep), likes))
-                setAnimatedPosts(Math.min(Math.floor(postsIncrement * currentStep), posts))
-
-                if (currentStep >= steps) {
-                    clearInterval(interval)
-                }
-            }, stepDuration)
-            return () => clearInterval(interval)
-        }, 500)
-
-        return () => clearTimeout(timer)
+        // Supprimé car unused
     }, [likes, posts])
 
-    const formatNumber = (num: number) => {
-        if (num >= 1000000) {
-            return `${(num / 1000000).toFixed(1)}M`
-        }
-        if (num >= 1000) {
-            return `${(num / 1000).toFixed(1)}K`
-        }
-        return num.toString()
-    }
 
     return (
         <div className="w-full max-w-lg mx-auto">
@@ -132,7 +99,7 @@ export function ProfileCard({
                     {/* Stats */}
                     <div className="grid grid-cols-2 gap-4 mb-8 py-6 border-t border-b border-white/5">
                         <div className="text-center">
-                            <div className="text-2xl font-black text-white mb-1">{animatedPosts}</div>
+                            <div className="text-2xl font-black text-white mb-1">{posts}</div>
                             <div className="text-[10px] text-white/40 font-black uppercase tracking-widest">Commandes</div>
                         </div>
                         <div className="text-center border-l border-white/5">

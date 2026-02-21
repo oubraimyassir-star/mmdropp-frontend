@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "../ui/switch";
 import { API_BASE_URL } from '@/config';
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertCircle, CheckCircle2, Save, Eye, EyeOff, Copy, RotateCw, CreditCard, Globe, Key, Mail, ShieldCheck, Bell, Users, ChevronRight } from "lucide-react";

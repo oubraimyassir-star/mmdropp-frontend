@@ -1478,7 +1478,7 @@ export default function App() {
                     </li>
                     <li>
                       <button
-                        onClick={() => { setAuthMode('signin'); setShowLogin(true); }}
+                        onClick={() => { setAuthMode('login'); setShowLogin(true); }}
                         className="text-gray-500 hover:text-white transition-colors text-sm text-left"
                       >{t('footer_signin' as any)}</button>
                     </li>

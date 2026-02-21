@@ -5,7 +5,6 @@ import {
     LayoutDashboard,
     LogOut,
     Settings,
-    CreditCard,
     Users,
     TrendingUp,
     X,
