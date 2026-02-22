@@ -258,13 +258,6 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
     };
 
     // Derived Stats for UI
-    const displayedStats = (stats && stats.revenue && stats.users && stats.orders) ? [
-        { label: "Revenu Total", value: `${(stats.revenue.total || 0).toFixed(2)} MAD`, icon: TrendingUp, color: "text-emerald-400" },
-        { label: "Profit Total", value: `${(stats.revenue.profit || 0).toFixed(2)} MAD`, icon: ShieldCheck, color: "text-gold-400" },
-        { label: "Comptes Créés", value: (stats.users.total || 0).toString(), icon: Users, color: "text-blue-400" },
-        { label: "Utilisateurs En Ligne", value: (stats.users.online || 0).toString(), icon: Globe, color: "text-emerald-500" },
-        { label: "Commandes", value: (stats.orders.total || 0).toString(), icon: ShoppingBag, color: "text-purple-400" },
-    ] : ADMIN_STATS;
 
     const displayedUsers = usersList;
     const displayedOrders = ordersList;
@@ -292,18 +285,13 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
         <div className={cn("flex flex-col h-full", isMobile ? "pt-8 px-6" : "p-6")}>
             <div className="flex items-center justify-between mb-10">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center border border-red-500/30">
-                        <ShieldCheck className="w-5 h-5 text-red-500" />
+                    <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center border border-red-500/20">
+                        <Shield className="w-5 h-5 text-red-400" />
                     </div>
-                    <span className="text-lg font-black uppercase tracking-tight text-red-100">
-                        ADMIN PANEL
-                    </span>
+                    <span className="text-lg font-black uppercase tracking-tight text-foreground/80">ADMINISTRATEUR</span>
                 </div>
                 {isMobile && (
-                    <button
-                        onClick={() => setIsMenuOpen(false)}
-                        className="p-2 rounded-lg hover:bg-white/5 text-white/40"
-                    >
+                    <button onClick={() => setIsMenuOpen(false)} className="p-2 rounded-lg hover:bg-foreground/5 text-foreground/40">
                         <X className="w-5 h-5" />
                     </button>
                 )}
@@ -321,16 +309,46 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
                             "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold uppercase tracking-wider text-xs text-left",
                             activeTab === item.label
                                 ? "bg-red-500/10 text-red-400 border border-red-500/20"
-                                : "hover:bg-white/5 text-white/60 hover:text-white border border-transparent"
+                                : "hover:bg-foreground/5 text-muted hover:text-foreground border border-transparent"
                         )}
                     >
-                        <item.icon className={cn("w-5 h-5 shrink-0", activeTab === item.label ? "text-red-400" : "text-white/40")} />
+                        <item.icon className={cn("w-5 h-5 shrink-0", activeTab === item.label ? "text-red-400" : "text-foreground/40")} />
                         {item.label}
                     </button>
                 ))}
             </div>
 
-            <div className="pt-4 mt-4 border-t border-white/5 space-y-2">
+            <div className="pt-4 mt-4 border-t border-white/5 space-y-4">
+                {/* Maintenance Mode Toggle */}
+                <div className="px-4 py-3 rounded-xl bg-amber-500/5 border border-amber-500/10">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                            <Shield className="w-4 h-4 text-amber-500" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-amber-500/80">Mode Offline</span>
+                        </div>
+                        <div
+                            onClick={async () => {
+                                try {
+                                    const token = localStorage.getItem('auth_token');
+                                    const res = await fetch(`${API_BASE_URL}/admin/settings`, { headers: { 'Authorization': `Bearer ${token}` } });
+                                    const settings = await res.json();
+                                    const newVal = !settings.general.maintenance_mode;
+                                    await fetch(`${API_BASE_URL}/admin/settings`, {
+                                        method: 'PUT',
+                                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ general: { ...settings.general, maintenance_mode: newVal } })
+                                    });
+                                    alert(`Système ${newVal ? 'HORS LIGNE' : 'EN LIGNE'}`);
+                                    window.location.reload();
+                                } catch (e) { alert("Erreur lors du basculement"); }
+                            }}
+                            className="relative w-8 h-4 bg-white/10 rounded-full cursor-pointer border border-white/10"
+                        >
+                            <div className="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-all" style={{ left: 'calc(100% - 14px)' }} />
+                        </div>
+                    </div>
+                </div>
+
                 {user?.email === 'oubraimyassir@gmail.com' && (
                     <button
                         onClick={() => (window as any).toggleManagerView?.()}
@@ -340,19 +358,21 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
                         Vue Manager
                     </button>
                 )}
-                <button
-                    onClick={onLogout}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/5 text-red-500/60 hover:text-red-400 transition-all font-bold uppercase tracking-wider text-xs"
-                >
-                    <LogOut className="w-5 h-5" />
-                    Déconnexion
-                </button>
+                <div className="border-t border-foreground/5 pt-4">
+                    <button
+                        onClick={onLogout}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400/60 hover:text-red-400 hover:bg-red-400/5 transition-all group"
+                    >
+                        <LogOut className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                        <span className="text-xs font-black uppercase tracking-widest">Déconnexion</span>
+                    </button>
+                </div>
             </div>
         </div>
     );
 
     return (
-        <div className="dark min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-300">
+        <div className="min-h-screen bg-background text-foreground font-sans selection:bg-red-500/30">
             <Banner
                 id="admin-welcome"
                 variant="rainbow"
@@ -362,16 +382,13 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
 
             <div className="flex flex-grow relative">
                 {/* Desktop Sidebar */}
-                <aside className="hidden lg:block w-72 border-r border-foreground/5 bg-foreground/[0.04] backdrop-blur-xl sticky h-[calc(100vh-var(--banner-height,0px))] top-[var(--banner-height,0px)] overflow-y-auto">
+                <aside className="hidden lg:flex w-72 bg-background border-r border-foreground/5 flex-col sticky top-0 h-screen">
                     <SidebarContent />
                 </aside>
 
                 <div className="flex-grow flex flex-col min-w-0">
                     {/* Header */}
-                    <nav
-                        className="border-b border-foreground/5 bg-foreground/[0.02] backdrop-blur-xl sticky top-0 z-30 transition-all duration-300 h-20 flex items-center"
-                        style={{ top: 'var(--banner-height, 0)' }}
-                    >
+                    <nav className="h-20 border-b border-foreground/5 bg-background/50 backdrop-blur-xl sticky top-0 z-50">
                         <div className="w-full px-6 flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="lg:hidden">
@@ -418,21 +435,26 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
                         {activeTab === 'Overview' && (
                             <div className="space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                    {displayedStats.map((stat, i) => (
+                                    {(stats ? [
+                                        { label: "Revenu Total", value: `${(stats.total_revenue || 0).toFixed(2)} MAD`, icon: TrendingUp, color: "text-emerald-400" },
+                                        { label: "Comptes Créés", value: stats.total_users || "0", icon: Users, color: "text-blue-400" },
+                                        { label: "Utilisateurs En Ligne", value: stats.online_users || "0", icon: Globe, color: "text-emerald-500" },
+                                        { label: "Commandes", value: stats.total_orders || "0", icon: ShoppingBag, color: "text-purple-400" },
+                                    ] : ADMIN_STATS).map((stat, i) => (
                                         <motion.div
                                             key={i}
                                             initial={{ opacity: 0, y: 20 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ delay: i * 0.1 }}
-                                            className="p-6 rounded-3xl glass-dark border border-white/5 hover:border-red-500/30 transition-all group"
+                                            className="p-6 rounded-3xl bg-foreground/5 border border-foreground/10 hover:border-red-500/30 transition-all group"
                                         >
                                             <div className="flex items-center gap-4 mb-4">
-                                                <div className={cn("p-3 rounded-2xl bg-white/5 group-hover:scale-110 transition-transform", stat.color)}>
+                                                <div className={cn("p-3 rounded-2xl bg-foreground/5 group-hover:scale-110 transition-transform", stat.color)}>
                                                     <stat.icon className="w-6 h-6" />
                                                 </div>
-                                                <span className="text-white/40 text-sm font-bold uppercase tracking-widest">{stat.label}</span>
+                                                <span className="text-muted text-sm font-bold uppercase tracking-widest">{stat.label}</span>
                                             </div>
-                                            <div className="text-3xl font-black tabular-nums">{stat.value}</div>
+                                            <div className="text-3xl font-black tabular-nums text-foreground">{stat.value}</div>
                                         </motion.div>
                                     ))}
                                 </div>
@@ -456,8 +478,8 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
                                     return (
                                         <div>
                                             <div className="flex items-center gap-3 mb-4">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Répartition des Commandes</span>
-                                                <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black text-white/40">{total} total</span>
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-muted">Répartition des Commandes</span>
+                                                <span className="px-2 py-0.5 rounded-full bg-foreground/5 border border-foreground/10 text-[10px] font-black text-muted">{total} total</span>
                                             </div>
                                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                                 {statusCards.map((s, i) => (
@@ -471,15 +493,15 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center gap-2">
                                                                 <span className={cn("w-2 h-2 rounded-full", s.dot)} />
-                                                                <span className="text-[10px] font-black uppercase tracking-widest text-white/40">{s.label}</span>
+                                                                <span className="text-[10px] font-black uppercase tracking-widest text-muted">{s.label}</span>
                                                             </div>
                                                             <span className={cn("text-[10px] font-black tabular-nums", s.color)}>{s.pct}%</span>
                                                         </div>
                                                         <div className={cn("text-3xl font-black tabular-nums", s.color)}>{s.count}</div>
-                                                        <div className="w-full bg-white/5 rounded-full h-1.5">
+                                                        <div className="w-full bg-foreground/5 rounded-full h-1.5">
                                                             <div className={cn("h-1.5 rounded-full transition-all", s.bar)} style={{ width: `${s.pct}%` }} />
                                                         </div>
-                                                        <span className="text-[10px] text-white/20 font-bold">{s.count} sur {total} commandes</span>
+                                                        <span className="text-[10px] text-muted font-bold">{s.count} sur {total} commandes</span>
                                                     </motion.div>
                                                 ))}
                                             </div>
@@ -759,28 +781,28 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="p-8 rounded-[40px] glass-dark border border-white/5 overflow-x-auto"
+                                className="rounded-[32px] glass-dark border border-foreground/5 overflow-x-auto"
                             >
                                 <table className="w-full">
                                     <thead>
-                                        <tr className="border-b border-white/5">
-                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Compte</th>
-                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Nom Client</th>
-                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Méthode</th>
-                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Service</th>
-                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Qté</th>
-                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Prix Total</th>
-                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Bénéfice</th>
-                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Preuve</th>
-                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Date</th>
-                                            <th className="text-right py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Actions</th>
+                                        <tr className="border-b border-foreground/5 bg-foreground/[0.02]">
+                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Client</th>
+                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Cible</th>
+                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Paiement</th>
+                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Service</th>
+                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Qté</th>
+                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Prix Total</th>
+                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Bénéfice</th>
+                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Preuve</th>
+                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Date</th>
+                                            <th className="text-right py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-white/5">
+                                    <tbody className="divide-y divide-foreground/5">
                                         {displayedOrders.map((order) => (
-                                            <tr key={order.id} className="group hover:bg-white/[0.02] transition-colors">
+                                            <tr key={order.id} className="group hover:bg-foreground/[0.02] transition-colors">
                                                 <td className="py-4 px-4">
-                                                    <div className="text-white font-bold text-xs truncate max-w-[120px]" title={order.owner?.email}>
+                                                    <div className="text-foreground font-bold text-xs truncate max-w-[120px]" title={order.owner?.email}>
                                                         {order.owner?.name || order.owner?.email || "N/A"}
                                                     </div>
                                                 </td>
@@ -790,15 +812,15 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
                                                     </div>
                                                 </td>
                                                 <td className="py-4 px-4">
-                                                    <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[9px] font-bold uppercase tracking-wider text-white/60">
+                                                    <span className="px-2 py-0.5 rounded-md bg-foreground/5 border border-foreground/10 text-[9px] font-bold uppercase tracking-wider text-muted">
                                                         {order.payment_method || "N/A"}
                                                     </span>
                                                 </td>
-                                                <td className="py-4 px-4 text-white/60 text-xs text-nowrap">
+                                                <td className="py-4 px-4 text-muted text-xs text-nowrap">
                                                     {order.service?.title || `Service #${order.service_id}`}
                                                 </td>
-                                                <td className="py-4 px-4 font-bold text-xs">{order.quantity}</td>
-                                                <td className="py-4 px-4 font-black text-xs text-white tabular-nums">
+                                                <td className="py-4 px-4 font-bold text-xs text-foreground">{order.quantity}</td>
+                                                <td className="py-4 px-4 font-black text-xs text-foreground tabular-nums">
                                                     {order.price?.toFixed(2)} MAD
                                                 </td>
                                                 <td className="py-4 px-4 font-black text-xs text-emerald-400 tabular-nums">
@@ -817,10 +839,10 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
                                                             <span className="text-[9px] font-bold uppercase tracking-wider">Photo</span>
                                                         </a>
                                                     ) : (
-                                                        <span className="text-[9px] font-black uppercase tracking-widest text-white/10 italic">Aucune</span>
+                                                        <span className="text-[9px] font-black uppercase tracking-widest text-muted italic">Aucune</span>
                                                     )}
                                                 </td>
-                                                <td className="py-4 px-4 text-[10px] text-white/40 font-medium">
+                                                <td className="py-4 px-4 text-[10px] text-muted font-medium">
                                                     {order.created_at ? new Date(order.created_at).toLocaleDateString('fr-FR', {
                                                         day: '2-digit',
                                                         month: '2-digit',
@@ -862,7 +884,7 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
                                                     </span>
                                                     <button
                                                         onClick={() => setViewingOrder(order)}
-                                                        className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all ml-1"
+                                                        className="p-1.5 rounded-lg hover:bg-foreground/10 text-muted hover:text-foreground transition-all ml-1"
                                                         title="Plus de détails"
                                                     >
                                                         <MoreHorizontal className="w-4 h-4" />
@@ -879,25 +901,25 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="p-8 rounded-[40px] glass-dark border border-white/5 overflow-x-auto"
+                                className="rounded-[32px] glass-dark border border-foreground/5 overflow-x-auto"
                             >
                                 <table className="w-full">
                                     <thead>
-                                        <tr className="border-b border-white/5">
-                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">ID</th>
-                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Titre</th>
-                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Prix</th>
-                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Platforme</th>
-                                            <th className="text-right py-4 px-4 text-[10px] font-black uppercase tracking-widest text-white/20">Modifier</th>
+                                        <tr className="border-b border-foreground/5 bg-foreground/[0.02]">
+                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">ID</th>
+                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Titre</th>
+                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Prix</th>
+                                            <th className="text-left py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Platforme</th>
+                                            <th className="text-right py-4 px-4 text-[10px] font-black uppercase tracking-widest text-muted">Modifier</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-white/5">
+                                    <tbody className="divide-y divide-foreground/5">
                                         {displayedServices.map((service) => (
-                                            <tr key={service.id} className="group hover:bg-white/[0.02] transition-colors">
-                                                <td className="py-4 px-4 font-mono text-xs text-white/40">{service.id}</td>
-                                                <td className="py-4 px-4 font-bold max-w-[200px] truncate">{service.title}</td>
+                                            <tr key={service.id} className="group hover:bg-foreground/[0.02] transition-colors">
+                                                <td className="py-4 px-4 font-mono text-xs text-muted">{service.id}</td>
+                                                <td className="py-4 px-4 font-bold max-w-[200px] truncate text-foreground">{service.title}</td>
                                                 <td className="py-4 px-4 font-medium text-emerald-400">{service.price.toFixed(2)} MAD / {service.unit}</td>
-                                                <td className="py-4 px-4 text-white/60">{service.platform}</td>
+                                                <td className="py-4 px-4 text-muted">{service.platform}</td>
                                                 <td className="py-4 px-4 text-right">
                                                     <button
                                                         onClick={() => {
@@ -910,7 +932,7 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
                                                                 is_active: service.is_active
                                                             });
                                                         }}
-                                                        className="p-2 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all"
+                                                        className="p-2 rounded-lg hover:bg-foreground/10 text-muted hover:text-foreground transition-all"
                                                     >
                                                         <Edit2 className="w-4 h-4" />
                                                     </button>
@@ -987,653 +1009,669 @@ export function AdminDashboard({ onLogout, user }: AdminDashboardProps) {
                         )}
                     </main>
                 </div>
-            </div>
+            </div >
 
             {/* Edit Service Modal */}
             <AnimatePresence>
-                {editingService && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-                        onClick={() => setEditingService(null)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            onClick={e => e.stopPropagation()}
-                            className="bg-[#0A0A0A] border border-white/10 p-8 rounded-3xl w-full max-w-md relative"
+                {
+                    editingService && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                            onClick={() => setEditingService(null)}
                         >
-                            <h3 className="text-xl font-bold text-white mb-4">Modifier le Service</h3>
-                            <p className="text-white/60 mb-6 text-sm">{editingService.title}</p>
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                                onClick={e => e.stopPropagation()}
+                                className="bg-background border border-foreground/10 p-8 rounded-3xl w-full max-w-md relative shadow-2xl"
+                            >
+                                <h3 className="text-xl font-bold text-foreground mb-4 uppercase tracking-tight">Modifier le Service</h3>
+                                <p className="text-muted mb-6 text-sm">{editingService.title}</p>
 
-                            <div className="space-y-4 max-h-[60vh] overflow-y-auto px-1">
-                                <div>
-                                    <label className="text-xs font-bold uppercase tracking-widest text-white/40 mb-2 block">Titre du Service</label>
-                                    <input
-                                        type="text"
-                                        value={editForm.title}
-                                        onChange={e => setEditForm(prev => ({ ...prev, title: e.target.value }))}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold uppercase tracking-widest text-white/40 mb-2 block">Description</label>
-                                    <textarea
-                                        value={editForm.description}
-                                        onChange={e => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 min-h-[100px]"
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-4 max-h-[60vh] overflow-y-auto px-1 custom-scrollbar">
                                     <div>
-                                        <label className="text-xs font-bold uppercase tracking-widest text-white/40 mb-2 block">Prix (MAD)</label>
-                                        <input
-                                            type="number"
-                                            step="0.01"
-                                            value={editForm.price}
-                                            onChange={e => setEditForm(prev => ({ ...prev, price: e.target.value }))}
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-bold uppercase tracking-widest text-white/40 mb-2 block">Unité</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted mb-2 block">Titre du Service</label>
                                         <input
                                             type="text"
-                                            value={editForm.unit}
-                                            onChange={e => setEditForm(prev => ({ ...prev, unit: e.target.value }))}
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500"
-                                            placeholder="1000, 1, pack..."
+                                            value={editForm.title}
+                                            onChange={e => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                                            className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-red-500 transition-colors"
                                         />
                                     </div>
-                                </div>
-                                <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
-                                    <span className="text-sm font-bold uppercase tracking-tight">Service Actif</span>
+                                    <div>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted mb-2 block">Description</label>
+                                        <textarea
+                                            value={editForm.description}
+                                            onChange={e => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                                            className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-red-500 min-h-[100px] transition-colors"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted mb-2 block">Prix (MAD)</label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                value={editForm.price}
+                                                onChange={e => setEditForm(prev => ({ ...prev, price: e.target.value }))}
+                                                className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-red-500 transition-colors"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted mb-2 block">Unité</label>
+                                            <input
+                                                type="text"
+                                                value={editForm.unit}
+                                                onChange={e => setEditForm(prev => ({ ...prev, unit: e.target.value }))}
+                                                className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-red-500 transition-colors"
+                                                placeholder="1000, 1, pack..."
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between p-4 bg-foreground/5 rounded-xl border border-foreground/10">
+                                        <span className="text-xs font-bold uppercase tracking-tight text-foreground">Service Actif</span>
+                                        <button
+                                            onClick={() => setEditForm(prev => ({ ...prev, is_active: !prev.is_active }))}
+                                            className={cn(
+                                                "w-12 h-6 rounded-full transition-all relative",
+                                                editForm.is_active ? "bg-emerald-500" : "bg-foreground/10"
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                "absolute top-1 w-4 h-4 bg-white rounded-full transition-all",
+                                                editForm.is_active ? "left-7" : "left-1"
+                                            )} />
+                                        </button>
+                                    </div>
                                     <button
-                                        onClick={() => setEditForm(prev => ({ ...prev, is_active: !prev.is_active }))}
-                                        className={cn(
-                                            "w-12 h-6 rounded-full transition-all relative",
-                                            editForm.is_active ? "bg-emerald-500" : "bg-white/10"
-                                        )}
+                                        onClick={handleSaveService}
+                                        className="w-full py-4 bg-red-500 hover:bg-red-400 text-white font-bold rounded-xl uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-2 mt-4"
                                     >
-                                        <div className={cn(
-                                            "absolute top-1 w-4 h-4 bg-white rounded-full transition-all",
-                                            editForm.is_active ? "left-7" : "left-1"
-                                        )} />
+                                        <Save className="w-4 h-4" />
+                                        Sauvegarder les Modifications
                                     </button>
                                 </div>
-                                <button
-                                    onClick={handleSaveService}
-                                    className="w-full py-4 bg-red-500 hover:bg-red-400 text-white font-bold rounded-xl uppercase tracking-widest text-xs transition-all flex items-center justify-center gap-2 mt-4"
-                                >
-                                    <Save className="w-4 h-4" />
-                                    Sauvegarder les Modifications
-                                </button>
-                            </div>
 
-                            <button
-                                onClick={() => setEditingService(null)}
-                                className="absolute top-4 right-4 p-2 text-white/20 hover:text-white"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+                                <button
+                                    onClick={() => setEditingService(null)}
+                                    className="absolute top-4 right-4 p-2 text-muted hover:text-foreground transition-colors"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </motion.div>
+                        </div>
+                    )
+                }
+            </AnimatePresence >
 
             {/* Order Detail Modal */}
             <AnimatePresence>
-                {viewingOrder && (
-                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
-                        onClick={() => setViewingOrder(null)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            onClick={e => e.stopPropagation()}
-                            className="bg-[#0D0D12] border border-white/10 p-8 rounded-[32px] w-full max-w-2xl relative shadow-2xl"
+                {
+                    viewingOrder && (
+                        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+                            onClick={() => setViewingOrder(null)}
                         >
-                            <div className="flex items-center gap-4 mb-8">
-                                <div className="w-12 h-12 rounded-2xl bg-primary-500/10 flex items-center justify-center border border-primary-500/20">
-                                    <ShoppingBag className="w-6 h-6 text-primary-400" />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-black uppercase tracking-tight text-white">Détails de la Commande</h3>
-                                    <div className="flex items-center gap-2 text-white/40 text-xs font-bold uppercase tracking-widest mt-1">
-                                        <Hash className="w-3 h-3" />
-                                        ID: {viewingOrder.id}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                {/* Section Gauche: Infos Client & Service */}
-                                <div className="space-y-6">
-                                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5">
-                                        <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-3">Utilisateur & Contact</div>
-                                        <div className="space-y-3">
-                                            <div className="flex items-center gap-2">
-                                                <UserIcon className="w-4 h-4 text-white/40" />
-                                                <span className="text-sm font-bold text-white">{viewingOrder.owner?.name || viewingOrder.owner?.email}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <Globe className="w-4 h-4 text-white/40" />
-                                                <span className="text-sm text-white/60">{viewingOrder.customer_name || "N/A"}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5">
-                                        <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-3">Service Commandé</div>
-                                        <div className="space-y-2">
-                                            <div className="text-sm font-black text-primary-400 uppercase tracking-tight">
-                                                {viewingOrder.service?.title || "Service Inconnu"}
-                                            </div>
-                                            <div className="text-xs text-white/60 font-medium italic">
-                                                {viewingOrder.quantity} unités
-                                            </div>
-                                            <div className="pt-2 flex items-center gap-2">
-                                                <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
-                                                <a href={viewingOrder.link} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-xs font-bold hover:underline transition-all truncate">
-                                                    {viewingOrder.link}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Section Droite: Finances & Dates */}
-                                <div className="space-y-6">
-                                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5">
-                                        <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-3">Analyse Financière</div>
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-xs text-white/40 font-bold uppercase tracking-wider">Prix de Vente</span>
-                                                <span className="text-sm font-black text-white">{viewingOrder.price?.toFixed(2)} MAD</span>
-                                            </div>
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-xs text-white/40 font-bold uppercase tracking-wider">Coût Fournisseur</span>
-                                                <span className="text-sm font-black text-red-400/80">{viewingOrder.cost?.toFixed(2)} MAD</span>
-                                            </div>
-                                            <div className="h-px bg-white/5 my-2" />
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-xs text-emerald-400/60 font-black uppercase tracking-[0.15em]">Bénéfice Net</span>
-                                                <span className="text-lg font-black text-emerald-400 tabular-nums">+{viewingOrder.profit?.toFixed(2)} MAD</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5">
-                                        <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-3">Informations Temporelles</div>
-                                        <div className="space-y-3">
-                                            <div className="flex items-center justify-between text-xs">
-                                                <div className="flex items-center gap-2 text-white/40">
-                                                    <Calendar className="w-3.5 h-3.5" />
-                                                    <span>Créé le :</span>
-                                                </div>
-                                                <span className="text-white font-medium">{new Date(viewingOrder.created_at).toLocaleDateString()} {new Date(viewingOrder.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                            </div>
-                                            {viewingOrder.transaction_id && (
-                                                <div className="flex items-center justify-between text-xs pt-2 border-t border-white/5">
-                                                    <div className="flex items-center gap-2 text-white/40">
-                                                        <Coins className="w-3.5 h-3.5" />
-                                                        <span>ID Transaction :</span>
-                                                    </div>
-                                                    <span className="font-mono text-white/60">{viewingOrder.transaction_id}</span>
-                                                </div>
-                                            )}
-                                            {viewingOrder.processed_by && (
-                                                <div className="flex items-center justify-between text-xs pt-2 border-t border-white/5">
-                                                    <div className="flex items-center gap-2 text-emerald-400/60">
-                                                        <ShieldCheck className="w-3.5 h-3.5" />
-                                                        <span>Traité par :</span>
-                                                    </div>
-                                                    <span className="font-bold text-emerald-400">ID #{viewingOrder.processed_by}</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={() => setViewingOrder(null)}
-                                className="absolute top-6 right-6 p-2 rounded-xl hover:bg-white/5 text-white/20 hover:text-white transition-all border border-transparent hover:border-white/10"
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                onClick={e => e.stopPropagation()}
+                                className="bg-background border border-foreground/10 p-8 rounded-[32px] w-full max-w-2xl relative shadow-2xl"
                             >
-                                <X className="w-5 h-5" />
-                            </button>
+                                <div className="flex items-center gap-4 mb-8">
+                                    <div className="w-12 h-12 rounded-2xl bg-primary-500/10 flex items-center justify-center border border-primary-500/20">
+                                        <ShoppingBag className="w-6 h-6 text-primary-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black uppercase tracking-tight text-foreground">Détails de la Commande</h3>
+                                        <div className="flex items-center gap-2 text-muted text-xs font-bold uppercase tracking-widest mt-1">
+                                            <Hash className="w-3 h-3" />
+                                            ID: {viewingOrder.id}
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <div className="mt-8 pt-8 border-t border-white/5 flex justify-end gap-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                    {/* Section Gauche: Infos Client & Service */}
+                                    <div className="space-y-6">
+                                        <div className="p-4 rounded-2xl bg-foreground/[0.03] border border-foreground/5">
+                                            <div className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-3">Utilisateur & Contact</div>
+                                            <div className="space-y-3">
+                                                <div className="flex items-center gap-2">
+                                                    <UserIcon className="w-4 h-4 text-muted" />
+                                                    <span className="text-sm font-bold text-foreground">{viewingOrder.owner?.name || viewingOrder.owner?.email}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Globe className="w-4 h-4 text-muted" />
+                                                    <span className="text-sm text-muted">{viewingOrder.customer_name || "N/A"}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="p-4 rounded-2xl bg-foreground/[0.03] border border-foreground/5">
+                                            <div className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-3">Service Commandé</div>
+                                            <div className="space-y-2">
+                                                <div className="text-sm font-black text-primary-400 uppercase tracking-tight">
+                                                    {viewingOrder.service?.title || "Service Inconnu"}
+                                                </div>
+                                                <div className="text-xs text-muted font-medium italic">
+                                                    {viewingOrder.quantity} unités
+                                                </div>
+                                                <div className="pt-2 flex items-center gap-2">
+                                                    <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
+                                                    <a href={viewingOrder.link} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-xs font-bold hover:underline transition-all truncate">
+                                                        {viewingOrder.link}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Section Droite: Finances & Dates */}
+                                    <div className="space-y-6">
+                                        <div className="p-4 rounded-2xl bg-foreground/[0.03] border border-foreground/5">
+                                            <div className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-3">Analyse Financière</div>
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted font-bold uppercase tracking-wider">Prix de Vente</span>
+                                                    <span className="text-sm font-black text-foreground">{viewingOrder.price?.toFixed(2)} MAD</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-muted font-bold uppercase tracking-wider">Coût Fournisseur</span>
+                                                    <span className="text-sm font-black text-red-400/80">{viewingOrder.cost?.toFixed(2)} MAD</span>
+                                                </div>
+                                                <div className="h-px bg-foreground/5 my-2" />
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs text-emerald-400/60 font-black uppercase tracking-[0.15em]">Bénéfice Net</span>
+                                                    <span className="text-lg font-black text-emerald-400 tabular-nums">+{viewingOrder.profit?.toFixed(2)} MAD</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="p-4 rounded-2xl bg-foreground/[0.03] border border-foreground/5">
+                                            <div className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-3">Informations Temporelles</div>
+                                            <div className="space-y-3">
+                                                <div className="flex items-center justify-between text-xs">
+                                                    <div className="flex items-center gap-2 text-muted">
+                                                        <Calendar className="w-3.5 h-3.5" />
+                                                        <span>Créé le :</span>
+                                                    </div>
+                                                    <span className="text-foreground font-medium">{new Date(viewingOrder.created_at).toLocaleDateString()} {new Date(viewingOrder.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                </div>
+                                                {viewingOrder.transaction_id && (
+                                                    <div className="flex items-center justify-between text-xs pt-2 border-t border-foreground/5">
+                                                        <div className="flex items-center gap-2 text-muted">
+                                                            <Coins className="w-3.5 h-3.5" />
+                                                            <span>ID Transaction :</span>
+                                                        </div>
+                                                        <span className="font-mono text-muted">{viewingOrder.transaction_id}</span>
+                                                    </div>
+                                                )}
+                                                {viewingOrder.processed_by && (
+                                                    <div className="flex items-center justify-between text-xs pt-2 border-t border-foreground/5">
+                                                        <div className="flex items-center gap-2 text-emerald-400/60">
+                                                            <ShieldCheck className="w-3.5 h-3.5" />
+                                                            <span>Traité par :</span>
+                                                        </div>
+                                                        <span className="font-bold text-emerald-400">ID #{viewingOrder.processed_by}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <button
                                     onClick={() => setViewingOrder(null)}
-                                    className="px-8 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-white font-black uppercase tracking-widest text-[10px] transition-all border border-white/5"
+                                    className="absolute top-6 right-6 p-2 rounded-xl hover:bg-foreground/5 text-muted hover:text-foreground transition-all border border-transparent hover:border-foreground/10"
                                 >
-                                    Fermer
+                                    <X className="w-5 h-5" />
                                 </button>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+
+                                <div className="mt-8 pt-8 border-t border-foreground/5 flex justify-end gap-3">
+                                    <button
+                                        onClick={() => setViewingOrder(null)}
+                                        className="px-8 py-3 rounded-2xl bg-foreground/5 hover:bg-foreground/10 text-foreground font-black uppercase tracking-widest text-[10px] transition-all border border-foreground/5"
+                                    >
+                                        Fermer
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )
+                }
+            </AnimatePresence >
 
             {/* Add Manager Modal */}
             <AnimatePresence>
-                {showAddManager && (
-                    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-                        onClick={() => setShowAddManager(false)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            onClick={e => e.stopPropagation()}
-                            className="bg-[#0A0A0A] border border-white/10 p-8 rounded-3xl w-full max-w-md relative"
+                {
+                    showAddManager && (
+                        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                            onClick={() => setShowAddManager(false)}
                         >
-                            <h3 className="text-xl font-bold text-white mb-6 uppercase tracking-tight">Ajouter un Manager</h3>
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                                onClick={e => e.stopPropagation()}
+                                className="bg-background border border-foreground/10 p-8 rounded-3xl w-full max-w-md relative shadow-2xl"
+                            >
+                                <h3 className="text-xl font-bold text-foreground mb-6 uppercase tracking-tight">Ajouter un Manager</h3>
 
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2 block">Nom Complet</label>
-                                    <input
-                                        type="text"
-                                        value={managerForm.name}
-                                        onChange={e => setManagerForm(prev => ({ ...prev, name: e.target.value }))}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 text-sm"
-                                        placeholder="Ex: Ahmed Ben"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2 block">Email Professionnel</label>
-                                    <input
-                                        type="email"
-                                        value={managerForm.email}
-                                        onChange={e => setManagerForm(prev => ({ ...prev, email: e.target.value }))}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 text-sm"
-                                        placeholder="manager@smmadroop.com"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2 block">Mot de Passe</label>
-                                    <input
-                                        type="password"
-                                        value={managerForm.password}
-                                        onChange={e => setManagerForm(prev => ({ ...prev, password: e.target.value }))}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 text-sm"
-                                        placeholder="••••••••"
-                                    />
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-2 block">Nom Complet</label>
+                                        <input
+                                            type="text"
+                                            value={managerForm.name}
+                                            onChange={e => setManagerForm(prev => ({ ...prev, name: e.target.value }))}
+                                            className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-red-500 text-sm transition-colors"
+                                            placeholder="Ex: Ahmed Ben"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-2 block">Email Professionnel</label>
+                                        <input
+                                            type="email"
+                                            value={managerForm.email}
+                                            onChange={e => setManagerForm(prev => ({ ...prev, email: e.target.value }))}
+                                            className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-red-500 text-sm transition-colors"
+                                            placeholder="manager@smmadroop.com"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-2 block">Mot de Passe</label>
+                                        <input
+                                            type="password"
+                                            value={managerForm.password}
+                                            onChange={e => setManagerForm(prev => ({ ...prev, password: e.target.value }))}
+                                            className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-red-500 text-sm transition-colors"
+                                            placeholder="••••••••"
+                                        />
+                                    </div>
+
+                                    <button
+                                        onClick={handleCreateManager}
+                                        disabled={isCreatingManager}
+                                        className={cn(
+                                            "w-full py-4 bg-red-500 hover:bg-red-400 text-white font-bold rounded-xl uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-2 mt-4",
+                                            isCreatingManager && "opacity-50 cursor-not-allowed"
+                                        )}
+                                    >
+                                        {isCreatingManager ? (
+                                            <>
+                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                Création en cours...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Save className="w-4 h-4" />
+                                                Créer le Compte Management
+                                            </>
+                                        )}
+                                    </button>
                                 </div>
 
                                 <button
-                                    onClick={handleCreateManager}
-                                    disabled={isCreatingManager}
-                                    className={cn(
-                                        "w-full py-4 bg-red-500 hover:bg-red-400 text-white font-bold rounded-xl uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-2 mt-4",
-                                        isCreatingManager && "opacity-50 cursor-not-allowed"
-                                    )}
+                                    onClick={() => setShowAddManager(false)}
+                                    className="absolute top-4 right-4 p-2 text-muted hover:text-foreground transition-colors"
                                 >
-                                    {isCreatingManager ? (
-                                        <>
-                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                            Création en cours...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Save className="w-4 h-4" />
-                                            Créer le Compte Management
-                                        </>
-                                    )}
+                                    <X className="w-5 h-5" />
                                 </button>
-                            </div>
-
-                            <button
-                                onClick={() => setShowAddManager(false)}
-                                className="absolute top-4 right-4 p-2 text-white/20 hover:text-white"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+                            </motion.div>
+                        </div>
+                    )
+                }
+            </AnimatePresence >
 
             {/* Edit Manager Modal */}
             <AnimatePresence>
-                {editingManager && (
-                    <div className="fixed inset-0 z-[125] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={() => setEditingManager(null)}>
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            onClick={e => e.stopPropagation()}
-                            className="bg-[#0A0A0F] border border-white/10 rounded-[32px] w-full max-w-md relative p-8"
-                        >
-                            <button onClick={() => setEditingManager(null)} className="absolute top-4 right-4 p-2 text-white/20 hover:text-white"><X className="w-5 h-5" /></button>
+                {
+                    editingManager && (
+                        <div className="fixed inset-0 z-[125] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={() => setEditingManager(null)}>
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                                onClick={e => e.stopPropagation()}
+                                className="bg-background border border-foreground/10 rounded-[32px] w-full max-w-md relative p-8 shadow-2xl"
+                            >
+                                <button onClick={() => setEditingManager(null)} className="absolute top-4 right-4 p-2 text-muted hover:text-foreground transition-all"><X className="w-5 h-5" /></button>
 
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 to-orange-600 flex items-center justify-center text-white font-black text-lg">
-                                    {editingManager.name?.charAt(0)?.toUpperCase()}
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 to-orange-600 flex items-center justify-center text-white font-black text-lg">
+                                        {editingManager.name?.charAt(0)?.toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black uppercase tracking-tight text-foreground">{editingManager.name}</h3>
+                                        <p className="text-xs text-muted">{editingManager.email}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="text-xl font-black uppercase tracking-tight text-white">{editingManager.name}</h3>
-                                    <p className="text-xs text-white/40">{editingManager.email}</p>
-                                </div>
-                            </div>
 
-                            {/* Status & Block Toggles */}
-                            <div className="grid grid-cols-1 gap-4 mb-6">
-                                <div>
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3 block">Statut du compte</label>
-                                    <div className="flex gap-2">
-                                        {[{ val: true, label: '✅ Actif' }, { val: false, label: '🔴 Inactif' }].map(opt => (
-                                            <button key={String(opt.val)}
-                                                onClick={() => setEditingManager((prev: any) => ({ ...prev, is_active: opt.val }))}
-                                                className={cn("flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all",
-                                                    editingManager.is_active === opt.val
-                                                        ? "bg-white text-black border-white"
-                                                        : "bg-white/5 text-white/40 border-white/10 hover:border-white/20"
+                                {/* Status & Block Toggles */}
+                                <div className="grid grid-cols-1 gap-4 mb-6">
+                                    <div>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted mb-3 block">Statut du compte</label>
+                                        <div className="flex gap-2">
+                                            {[{ val: true, label: '✅ Actif' }, { val: false, label: '🔴 Inactif' }].map(opt => (
+                                                <button key={String(opt.val)}
+                                                    onClick={() => setEditingManager((prev: any) => ({ ...prev, is_active: opt.val }))}
+                                                    className={cn("flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all",
+                                                        editingManager.is_active === opt.val
+                                                            ? "bg-foreground text-background border-foreground"
+                                                            : "bg-foreground/5 text-muted border-foreground/10 hover:border-foreground/20"
+                                                    )}>
+                                                    {opt.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted mb-3 block">Accès au Dashboard</label>
+                                        <button
+                                            onClick={() => setEditingManager((prev: any) => ({ ...prev, is_blocked: !prev.is_blocked }))}
+                                            className={cn("w-full py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all flex items-center justify-center gap-2",
+                                                editingManager.is_blocked
+                                                    ? "bg-red-500/20 text-red-400 border-red-500/30"
+                                                    : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                                            )}
+                                        >
+                                            {editingManager.is_blocked ? '🔒 DASHBOARD BLOQUÉ' : '🔓 ACCÈS AUTORISÉ'}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Permissions */}
+                                <div className="mb-6">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted mb-3 block">Permissions</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {ALL_PERMISSIONS.map(perm => (
+                                            <button key={perm}
+                                                onClick={() => setManagerPermissions(prev =>
+                                                    prev.includes(perm) ? prev.filter(p => p !== perm) : [...prev, perm]
+                                                )}
+                                                className={cn("px-3 py-2 rounded-xl text-[10px] font-bold text-left border transition-all",
+                                                    managerPermissions.includes(perm)
+                                                        ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                                                        : "bg-foreground/5 text-muted border-foreground/10 hover:border-foreground/20"
                                                 )}>
-                                                {opt.label}
+                                                {managerPermissions.includes(perm) ? '✓ ' : ''}{perm}
                                             </button>
                                         ))}
                                     </div>
                                 </div>
-                                <div>
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3 block">Accès au Dashboard</label>
-                                    <button
-                                        onClick={() => setEditingManager((prev: any) => ({ ...prev, is_blocked: !prev.is_blocked }))}
-                                        className={cn("w-full py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all flex items-center justify-center gap-2",
-                                            editingManager.is_blocked
-                                                ? "bg-red-500/20 text-red-300 border-red-500/30"
-                                                : "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-                                        )}
-                                    >
-                                        {editingManager.is_blocked ? '🔒 DASHBOARD BLOQUÉ' : '🔓 ACCÈS AUTORISÉ'}
-                                    </button>
-                                </div>
-                            </div>
 
-                            {/* Permissions */}
-                            <div className="mb-6">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3 block">Permissions</label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {ALL_PERMISSIONS.map(perm => (
-                                        <button key={perm}
-                                            onClick={() => setManagerPermissions(prev =>
-                                                prev.includes(perm) ? prev.filter(p => p !== perm) : [...prev, perm]
-                                            )}
-                                            className={cn("px-3 py-2 rounded-xl text-[10px] font-bold text-left border transition-all",
-                                                managerPermissions.includes(perm)
-                                                    ? "bg-blue-500/20 text-blue-300 border-blue-500/30"
-                                                    : "bg-white/5 text-white/30 border-white/10 hover:border-white/20"
-                                            )}>
-                                            {managerPermissions.includes(perm) ? '✓ ' : ''}{perm}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                                {/* Save */}
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            const token = localStorage.getItem('auth_token');
 
-                            {/* Save */}
-                            <button
-                                onClick={async () => {
-                                    try {
-                                        const token = localStorage.getItem('auth_token');
+                                            // Update active status if changed
+                                            const original = managersList.find((m: any) => m.id === editingManager.id);
+                                            if (original && original.is_active !== editingManager.is_active) {
+                                                await fetch(`${API_BASE_URL}/admin/users/${editingManager.id}/toggle-active`, {
+                                                    method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
+                                                });
+                                            }
 
-                                        // Update active status if changed
-                                        const original = managersList.find((m: any) => m.id === editingManager.id);
-                                        if (original && original.is_active !== editingManager.is_active) {
-                                            await fetch(`${API_BASE_URL}/admin/users/${editingManager.id}/toggle-active`, {
-                                                method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
-                                            });
-                                        }
+                                            // Update block status if changed
+                                            if (original && original.is_blocked !== editingManager.is_blocked) {
+                                                await fetch(`${API_BASE_URL}/admin/managers/${editingManager.id}/toggle-block`, {
+                                                    method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
+                                                });
+                                            }
 
-                                        // Update block status if changed
-                                        if (original && original.is_blocked !== editingManager.is_blocked) {
-                                            await fetch(`${API_BASE_URL}/admin/managers/${editingManager.id}/toggle-block`, {
-                                                method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
-                                            });
-                                        }
-
-                                        showToast(`✅ ${editingManager.name} mis à jour`);
-                                        setEditingManager(null);
-                                        fetchData();
-                                    } catch { showToast('Erreur lors de la mise à jour', 'error'); }
-                                }}
-                                className="w-full py-3.5 bg-blue-500 hover:bg-blue-400 text-white font-black rounded-xl uppercase tracking-widest text-[10px] transition-all"
-                            >
-                                Sauvegarder les modifications
-                            </button>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+                                            showToast(`✅ ${editingManager.name} mis à jour`);
+                                            setEditingManager(null);
+                                            fetchData();
+                                        } catch { showToast('Erreur lors de la mise à jour', 'error'); }
+                                    }}
+                                    className="w-full py-3.5 bg-blue-500 hover:bg-blue-400 text-white font-black rounded-xl uppercase tracking-widest text-[10px] transition-all"
+                                >
+                                    Sauvegarder les modifications
+                                </button>
+                            </motion.div>
+                        </div>
+                    )
+                }
+            </AnimatePresence >
 
             {/* Toast Notification */}
             <AnimatePresence>
-                {toast && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                        className={cn(
-                            "fixed bottom-6 right-6 z-[200] px-5 py-3.5 rounded-2xl text-sm font-bold shadow-2xl border",
-                            toast.type === 'success'
-                                ? "bg-emerald-900/90 text-emerald-300 border-emerald-500/30"
-                                : "bg-red-900/90 text-red-300 border-red-500/30"
-                        )}
-                    >
-                        {toast.msg}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                {
+                    toast && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                            className={cn(
+                                "fixed bottom-6 right-6 z-[200] px-5 py-3.5 rounded-2xl text-sm font-bold shadow-2xl border",
+                                toast.type === 'success'
+                                    ? "bg-emerald-900/90 text-emerald-300 border-emerald-500/30"
+                                    : "bg-red-900/90 text-red-300 border-red-500/30"
+                            )}
+                        >
+                            {toast.msg}
+                        </motion.div>
+                    )
+                }
+            </AnimatePresence >
 
             {/* Customer Detail Modal */}
             <AnimatePresence>
-                {viewingCustomer && (
-                    <div
-                        className="fixed inset-0 z-[115] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
-                        onClick={() => setViewingCustomer(null)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            onClick={e => e.stopPropagation()}
-                            className="bg-[#0A0A0F] border border-white/10 rounded-[32px] w-full max-w-2xl relative overflow-hidden max-h-[90vh] flex flex-col"
+                {
+                    viewingCustomer && (
+                        <div
+                            className="fixed inset-0 z-[115] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+                            onClick={() => setViewingCustomer(null)}
                         >
-                            {/* Header */}
-                            <div className="p-8 border-b border-white/5 flex items-start justify-between gap-4">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-xl shrink-0">
-                                        {viewingCustomer.name?.charAt(0)?.toUpperCase() || '?'}
-                                    </div>
-                                    <div>
-                                        <h3 className="text-2xl font-black uppercase tracking-tight text-white">{viewingCustomer.name}</h3>
-                                        <p className="text-sm text-white/40 font-medium">{viewingCustomer.email}</p>
-                                        <div className="flex items-center gap-2 mt-2">
-                                            <span className={cn(
-                                                "px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest",
-                                                viewingCustomer.is_active ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
-                                            )}>
-                                                {viewingCustomer.is_active ? 'Actif' : 'Inactif'}
-                                            </span>
-                                            <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-blue-500/10 text-blue-400">
-                                                {viewingCustomer.role}
-                                            </span>
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                onClick={e => e.stopPropagation()}
+                                className="bg-background border border-foreground/10 rounded-[32px] w-full max-w-2xl relative overflow-hidden max-h-[90vh] flex flex-col shadow-2xl"
+                            >
+                                {/* Header */}
+                                <div className="p-8 border-b border-foreground/5 flex items-start justify-between gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-xl shrink-0">
+                                            {viewingCustomer.name?.charAt(0)?.toUpperCase() || '?'}
+                                        </div>
+                                        <div>
+                                            <h3 className="text-2xl font-black uppercase tracking-tight text-foreground">{viewingCustomer.name}</h3>
+                                            <p className="text-sm text-muted font-medium">{viewingCustomer.email}</p>
+                                            <div className="flex items-center gap-2 mt-2">
+                                                <span className={cn(
+                                                    "px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest",
+                                                    viewingCustomer.is_active ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-500"
+                                                )}>
+                                                    {viewingCustomer.is_active ? 'Actif' : 'Inactif'}
+                                                </span>
+                                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-blue-500/10 text-blue-400">
+                                                    {viewingCustomer.role}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
+                                    <button onClick={() => setViewingCustomer(null)} className="p-2 text-muted hover:text-foreground transition-colors shrink-0">
+                                        <X className="w-5 h-5" />
+                                    </button>
                                 </div>
-                                <button onClick={() => setViewingCustomer(null)} className="p-2 text-white/20 hover:text-white transition-colors shrink-0">
-                                    <X className="w-5 h-5" />
-                                </button>
-                            </div>
 
-                            {/* Stats Row */}
-                            <div className="grid grid-cols-3 divide-x divide-white/5 border-b border-white/5">
-                                <div className="p-5 text-center">
-                                    <div className="text-2xl font-black text-emerald-400 tabular-nums">{(viewingCustomer.total_profit || 0).toFixed(2)}</div>
-                                    <div className="text-[10px] text-white/30 font-black uppercase tracking-widest mt-1">Bénéfice Réel (MAD)</div>
+                                {/* Stats Row */}
+                                <div className="grid grid-cols-3 divide-x divide-foreground/5 border-b border-foreground/5">
+                                    <div className="p-5 text-center">
+                                        <div className="text-2xl font-black text-emerald-400 tabular-nums">{(viewingCustomer.total_profit || 0).toFixed(2)}</div>
+                                        <div className="text-[10px] text-muted font-black uppercase tracking-widest mt-1">Bénéfice Réel (MAD)</div>
+                                    </div>
+                                    <div className="p-5 text-center">
+                                        <div className="text-2xl font-black text-foreground tabular-nums">{viewingCustomer.order_count || customerOrders.length}</div>
+                                        <div className="text-[10px] text-muted font-black uppercase tracking-widest mt-1">Commandes</div>
+                                    </div>
+                                    <div className="p-5 text-center">
+                                        <div className="text-2xl font-black text-blue-400 tabular-nums">{(viewingCustomer.total_profit || 0).toFixed(2)}</div>
+                                        <div className="text-[10px] text-muted font-black uppercase tracking-widest mt-1">Total Dépensé (MAD)</div>
+                                    </div>
                                 </div>
-                                <div className="p-5 text-center">
-                                    <div className="text-2xl font-black text-white tabular-nums">{viewingCustomer.order_count || customerOrders.length}</div>
-                                    <div className="text-[10px] text-white/30 font-black uppercase tracking-widest mt-1">Commandes</div>
-                                </div>
-                                <div className="p-5 text-center">
-                                    <div className="text-2xl font-black text-blue-400 tabular-nums">{(viewingCustomer.total_profit || 0).toFixed(2)}</div>
-                                    <div className="text-[10px] text-white/30 font-black uppercase tracking-widest mt-1">Total Dépensé (MAD)</div>
-                                </div>
-                            </div>
 
-                            {/* Orders History */}
-                            <div className="flex-1 overflow-y-auto p-6">
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-4">Historique des Commandes</h4>
-                                {customerOrders.length === 0 ? (
-                                    <div className="text-center py-10 text-white/20 text-sm font-bold uppercase tracking-widest">Aucune commande</div>
-                                ) : (
-                                    <div className="space-y-2">
-                                        {customerOrders.slice(0, 10).map((order: any) => (
-                                            <div key={order.id} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/[0.07] transition-colors">
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="font-bold text-sm text-white truncate">{order.service?.title || `Service #${order.service_id}`}</div>
-                                                    <div className="text-[10px] text-white/30 font-medium mt-0.5">
-                                                        {new Date(order.created_at).toLocaleDateString('fr-FR')} · Qté: {order.quantity}
+                                {/* Orders History */}
+                                <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-muted mb-4">Historique des Commandes</h4>
+                                    {customerOrders.length === 0 ? (
+                                        <div className="text-center py-10 text-muted text-sm font-bold uppercase tracking-widest">Aucune commande</div>
+                                    ) : (
+                                        <div className="space-y-2">
+                                            {customerOrders.slice(0, 10).map((order: any) => (
+                                                <div key={order.id} className="flex items-center justify-between p-4 rounded-2xl bg-foreground/5 border border-foreground/5 hover:bg-foreground/[0.07] transition-colors">
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="font-bold text-sm text-foreground truncate">{order.service?.title || `Service #${order.service_id}`}</div>
+                                                        <div className="text-[10px] text-muted font-medium mt-0.5">
+                                                            {new Date(order.created_at).toLocaleDateString('fr-FR')} · Qté: {order.quantity}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-3 ml-4 shrink-0">
+                                                        <span className="font-black text-sm text-emerald-400 tabular-nums">{(order.price || 0).toFixed(2)} MAD</span>
+                                                        <span className={cn(
+                                                            "px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest",
+                                                            order.status === 'completed' ? "bg-emerald-500/10 text-emerald-400" :
+                                                                order.status === 'cancelled' ? "bg-red-500/10 text-red-500" :
+                                                                    order.status === 'processing' ? "bg-blue-500/10 text-blue-400" :
+                                                                        "bg-amber-500/10 text-amber-400"
+                                                        )}>
+                                                            {order.status === 'completed' ? 'Confirmée' :
+                                                                order.status === 'cancelled' ? 'Annulée' :
+                                                                    order.status === 'processing' ? 'En cours' : 'En attente'}
+                                                        </span>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-3 ml-4 shrink-0">
-                                                    <span className="font-black text-sm text-emerald-400 tabular-nums">{(order.price || 0).toFixed(2)} MAD</span>
-                                                    <span className={cn(
-                                                        "px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest",
-                                                        order.status === 'completed' ? "bg-emerald-500/10 text-emerald-400" :
-                                                            order.status === 'cancelled' ? "bg-red-500/10 text-red-400" :
-                                                                order.status === 'processing' ? "bg-blue-500/10 text-blue-400" :
-                                                                    "bg-amber-500/10 text-amber-400"
-                                                    )}>
-                                                        {order.status === 'completed' ? 'Confirmée' :
-                                                            order.status === 'cancelled' ? 'Annulée' :
-                                                                order.status === 'processing' ? 'En cours' : 'En attente'}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Quick Actions Footer */}
-                            <div className="p-6 border-t border-white/5 flex items-center gap-3 flex-wrap">
-                                <button
-                                    onClick={() => {
-                                        handleToggleUserActive(viewingCustomer.id);
-                                        setViewingCustomer((prev: any) => ({ ...prev, is_active: !prev.is_active }));
-                                    }}
-                                    className={cn(
-                                        "px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all",
-                                        viewingCustomer.is_active
-                                            ? "bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500 hover:text-white"
-                                            : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500 hover:text-white"
+                                            ))}
+                                        </div>
                                     )}
-                                >
-                                    {viewingCustomer.is_active ? '🔒 Désactiver' : '✅ Activer'}
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        handleSetRole(viewingCustomer.id, viewingCustomer.role === 'management' ? 'user' : 'management');
-                                        setViewingCustomer(null);
-                                    }}
-                                    className="px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border bg-purple-500/10 text-purple-400 border-purple-500/20 hover:bg-purple-500 hover:text-white transition-all"
-                                >
-                                    {viewingCustomer.role === 'management' ? '👤 Rétrograder' : '⭐ Promouvoir Manager'}
-                                </button>
-                                <button
-                                    onClick={() => setViewingCustomer(null)}
-                                    className="ml-auto px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border bg-white/5 text-white/40 border-white/10 hover:bg-white/10 hover:text-white transition-all"
-                                >
-                                    Fermer
-                                </button>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+                                </div>
+
+                                {/* Quick Actions Footer */}
+                                <div className="p-6 border-t border-foreground/5 flex items-center gap-3 flex-wrap">
+                                    <button
+                                        onClick={() => {
+                                            handleToggleUserActive(viewingCustomer.id);
+                                            setViewingCustomer((prev: any) => ({ ...prev, is_active: !prev.is_active }));
+                                        }}
+                                        className={cn(
+                                            "px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all",
+                                            viewingCustomer.is_active
+                                                ? "bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white"
+                                                : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500 hover:text-white"
+                                        )}
+                                    >
+                                        {viewingCustomer.is_active ? '🔒 Désactiver' : '✅ Activer'}
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            handleSetRole(viewingCustomer.id, viewingCustomer.role === 'management' ? 'user' : 'management');
+                                            setViewingCustomer(null);
+                                        }}
+                                        className="px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border bg-purple-500/10 text-purple-400 border-purple-500/20 hover:bg-purple-500 hover:text-white transition-all"
+                                    >
+                                        {viewingCustomer.role === 'management' ? '👤 Rétrograder' : '⭐ Promouvoir Manager'}
+                                    </button>
+                                    <button
+                                        onClick={() => setViewingCustomer(null)}
+                                        className="ml-auto px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border bg-foreground/5 text-muted border-foreground/10 hover:bg-foreground/10 hover:text-foreground transition-all"
+                                    >
+                                        Fermer
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )
+                }
+            </AnimatePresence >
 
             {/* Transfer Funds Modal */}
             <AnimatePresence>
-                {showTransferFunds && (
-                    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-                        onClick={() => setShowTransferFunds(null)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            onClick={e => e.stopPropagation()}
-                            className="bg-[#0A0A0A] border border-white/10 p-8 rounded-3xl w-full max-w-sm relative"
+                {
+                    showTransferFunds && (
+                        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                            onClick={() => setShowTransferFunds(null)}
                         >
-                            <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-tight">Virement de Fonds</h3>
-                            <p className="text-[10px] text-white/40 uppercase font-black tracking-tight mb-8">Envoyer de l'argent vers le wallet de {showTransferFunds.name}</p>
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                                onClick={e => e.stopPropagation()}
+                                className="bg-background border border-foreground/10 p-8 rounded-3xl w-full max-w-sm relative shadow-2xl"
+                            >
+                                <h3 className="text-xl font-bold text-foreground mb-2 uppercase tracking-tight">Virement de Fonds</h3>
+                                <p className="text-[10px] text-muted uppercase font-black tracking-tight mb-8">Envoyer de l'argent vers le wallet de {showTransferFunds.name}</p>
 
-                            <div className="space-y-6">
-                                <div>
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2 block">Montant à transférer (MAD)</label>
-                                    <div className="relative">
-                                        <Coins className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-400" />
-                                        <input
-                                            type="number"
-                                            value={transferAmount}
-                                            onChange={e => setTransferAmount(e.target.value)}
-                                            className="w-full bg-emerald-500/5 border border-emerald-500/10 rounded-xl pl-12 pr-4 py-4 text-white text-2xl font-black focus:outline-none focus:border-emerald-500"
-                                            placeholder="0.00"
-                                            autoFocus
-                                        />
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-2 block">Montant à transférer (MAD)</label>
+                                        <div className="relative">
+                                            <Coins className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-400" />
+                                            <input
+                                                type="number"
+                                                value={transferAmount}
+                                                onChange={e => setTransferAmount(e.target.value)}
+                                                className="w-full bg-emerald-500/5 border border-emerald-500/10 rounded-xl pl-12 pr-4 py-4 text-foreground text-2xl font-black focus:outline-none focus:border-emerald-500 transition-colors"
+                                                placeholder="0.00"
+                                                autoFocus
+                                            />
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-[10px] text-white/40 uppercase font-bold tracking-widest leading-relaxed">
-                                    ℹ️ Ce montant sera immédiatement ajouté au solde du manager. Cette action est irréversible.
+                                    <div className="p-4 rounded-xl bg-foreground/5 border border-foreground/10 text-[10px] text-muted uppercase font-bold tracking-widest leading-relaxed">
+                                        ℹ️ Ce montant sera immédiatement ajouté au solde du manager. Cette action est irréversible.
+                                    </div>
+
+                                    <button
+                                        onClick={handleTransferFunds}
+                                        className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-xl uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-2"
+                                    >
+                                        <CheckCircle2 className="w-4 h-4" />
+                                        Confirmer le Virement
+                                    </button>
                                 </div>
 
                                 <button
-                                    onClick={handleTransferFunds}
-                                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-xl uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-2"
+                                    onClick={() => setShowTransferFunds(null)}
+                                    className="absolute top-4 right-4 p-2 text-muted hover:text-foreground transition-colors"
                                 >
-                                    <CheckCircle2 className="w-4 h-4" />
-                                    Confirmer le Virement
+                                    <X className="w-5 h-5" />
                                 </button>
-                            </div>
-
-                            <button
-                                onClick={() => setShowTransferFunds(null)}
-                                className="absolute top-4 right-4 p-2 text-white/20 hover:text-white"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+                            </motion.div>
+                        </div>
+                    )
+                }
+            </AnimatePresence >
 
             {/* Mobile Sidebar */}
             <AnimatePresence>
-                {isMenuOpen && (
-                    <>
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setIsMenuOpen(false)}
-                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden"
-                        />
-                        <motion.aside
-                            initial={{ x: '-100%' }}
-                            animate={{ x: 0 }}
-                            exit={{ x: '-100%' }}
-                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed left-0 top-0 bottom-0 w-72 bg-black border-r border-white/10 z-[70] lg:hidden"
-                        >
-                            <SidebarContent isMobile />
-                        </motion.aside>
-                    </>
-                )}
-            </AnimatePresence>
+                {
+                    isMenuOpen && (
+                        <>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setIsMenuOpen(false)}
+                                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden"
+                            />
+                            <motion.aside
+                                initial={{ x: '-100%' }}
+                                animate={{ x: 0 }}
+                                exit={{ x: '-100%' }}
+                                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                                className="fixed left-0 top-0 bottom-0 w-72 bg-black border-r border-white/10 z-[70] lg:hidden"
+                            >
+                                <SidebarContent isMobile />
+                            </motion.aside>
+                        </>
+                    )
+                }
+            </AnimatePresence >
         </div >
     );
 }

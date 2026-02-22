@@ -80,7 +80,6 @@ interface DashboardProps {
     formatPrice: (amount: number | string) => string;
     currency: string;
     currencyRate: number;
-    lang: string;
 }
 
 export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refreshData, onCreateOrder, formatPrice, onOpenAdmin, currency, currencyRate }: DashboardProps) {

@@ -348,6 +348,7 @@ export default function App() {
   });
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [showManagerView, setShowManagerView] = useState(false);
+  const [isMaintenance, setIsMaintenance] = useState(false);
   const [dashboardData, setDashboardData] = useState<UserDashboardData>(DEFAULT_DASHBOARD_DATA);
 
   const CURRENCY_CONFIG: Record<string, { symbol: string, rate: number }> = {
@@ -648,7 +649,7 @@ export default function App() {
     }
   }, [dashboardData, currentUserEmail]);
 
-  const handleLoginSuccess = async (mode?: 'login' | 'signup', email?: string, extraData?: any) => {
+  const handleLoginSuccess = async (email?: string, extraData?: any) => {
     setIsLoggedIn(true);
     setShowLogin(false);
     if (email) {
@@ -1133,7 +1134,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen">
-      {showOnboarding ? (
+      {isMaintenance ? (
+        <MaintenancePage />
+      ) : showOnboarding ? (
         <OnboardingFlow onComplete={handleOnboardingComplete} />
       ) : isLoggedIn ? (
         !userData.is_active && userData.role !== 'admin' ? (
@@ -1156,7 +1159,6 @@ export default function App() {
             refreshData={fetchDashboardData}
             onCreateOrder={handleCreateOrder}
             formatPrice={formatPrice}
-            lang={lang}
             // @ts-ignore
             onOpenAdmin={userData.role === 'admin' ? () => setShowAdminDashboard(true) : undefined}
             currency={userData.preferences?.currency || 'eur'}
@@ -1555,7 +1557,7 @@ export default function App() {
             <div className="absolute inset-0 bg-background/80 backdrop-blur-md" onClick={() => setShowLogin(false)} />
             <SignInCard
               onBack={() => setShowLogin(false)}
-              onSuccess={(mode: 'login' | 'signup', email: string, data?: any) => handleLoginSuccess(mode, email, data)}
+              onSuccess={(_mode: 'login' | 'signup', email: string, data?: any) => handleLoginSuccess(email, data)}
               t={t}
               initialMode={authMode}
             />

@@ -94,14 +94,14 @@ function DepositModal({ onClose, onRefresh }: { onClose: () => void, onRefresh?:
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#030014]/80 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-md"
             onClick={onClose}
         >
             <motion.div
                 initial={{ scale: 0.9, y: 20, opacity: 0 }}
                 animate={{ scale: 1, y: 0, opacity: 1 }}
                 exit={{ scale: 0.9, y: 20, opacity: 0 }}
-                className="w-full max-w-lg glass-dark border border-white/10 rounded-[40px] p-8 md:p-10 relative overflow-hidden"
+                className="w-full max-w-lg glass-dark border border-foreground/10 rounded-[40px] p-8 md:p-10 relative overflow-hidden"
                 onClick={e => e.stopPropagation()}
             >
                 {isSuccess ? (
@@ -109,8 +109,8 @@ function DepositModal({ onClose, onRefresh }: { onClose: () => void, onRefresh?:
                         <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mb-6">
                             <Zap className="w-10 h-10 text-emerald-500" />
                         </div>
-                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Dépôt Initié !</h2>
-                        <p className="text-white/60 font-medium">Votre demande de recharge de {amount} MAD est en cours de validation.</p>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-2 text-foreground">Dépôt Initié !</h2>
+                        <p className="text-muted font-medium">Votre demande de recharge de {amount} MAD est en cours de validation.</p>
                     </div>
                 ) : (
                     <>
@@ -119,19 +119,19 @@ function DepositModal({ onClose, onRefresh }: { onClose: () => void, onRefresh?:
                                 <Wallet className="w-8 h-8" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black uppercase tracking-tight text-white">Recharger le Solde</h2>
-                                <p className="text-xs font-bold text-white/40 uppercase tracking-widest">SMMADROOP Wallet</p>
+                                <h2 className="text-2xl font-black uppercase tracking-tight text-foreground">Recharger le Solde</h2>
+                                <p className="text-xs font-bold text-foreground/40 uppercase tracking-widest">SMMADROOP Wallet</p>
                             </div>
                         </div>
 
                         <div className="space-y-6">
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-1">Montant à ajouter (MAD)</label>
+                            <div className="space-y-2 transition-colors">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-foreground/20 ml-1">Montant à ajouter (MAD)</label>
                                 <input
                                     type="number"
                                     value={amount}
                                     onChange={(e) => setAmount(e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-xl font-black text-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
+                                    className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl py-4 px-6 text-xl font-black text-foreground focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-sans"
                                 />
                             </div>
 
@@ -151,8 +151,8 @@ function DepositModal({ onClose, onRefresh }: { onClose: () => void, onRefresh?:
                                             className={cn(
                                                 "flex items-center gap-3 p-4 rounded-2xl border transition-all",
                                                 paymentMethod === method.id
-                                                    ? "bg-primary-500/10 border-primary-500 text-white"
-                                                    : "bg-white/5 border-white/5 text-white/40 hover:bg-white/10"
+                                                    ? "bg-primary-500/10 border-primary-500 text-foreground"
+                                                    : "bg-foreground/5 border-foreground/5 text-muted hover:bg-foreground/10"
                                             )}
                                         >
                                             <method.icon className={cn("w-5 h-5", method.color)} />
@@ -163,7 +163,7 @@ function DepositModal({ onClose, onRefresh }: { onClose: () => void, onRefresh?:
                             </div>
 
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-1">Preuve de Paiement (Reçu Optionnel)</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-foreground/20 ml-1">Preuve de Paiement (Reçu Optionnel)</label>
                                 <input
                                     type="file"
                                     id="deposit-receipt"
@@ -173,8 +173,8 @@ function DepositModal({ onClose, onRefresh }: { onClose: () => void, onRefresh?:
                                 <label
                                     htmlFor="deposit-receipt"
                                     className={cn(
-                                        "flex items-center justify-center gap-3 p-4 rounded-2xl border border-dashed transition-all cursor-pointer",
-                                        receipt ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-400" : "bg-white/5 border-white/20 text-white/40 hover:bg-white/10 hover:border-white/40 shadow-inner shadow-black/20"
+                                        "flex items-center justify-center gap-3 p-4 rounded-2xl border border-dashed transition-all cursor-pointer font-sans",
+                                        receipt ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-400" : "bg-foreground/5 border-foreground/20 text-muted hover:bg-foreground/10 hover:border-foreground/40 shadow-inner shadow-black/5"
                                     )}
                                 >
                                     {receipt ? <CheckCircle2 className="w-5 h-5" /> : <ImageIcon className="w-5 h-5" />}
@@ -187,7 +187,7 @@ function DepositModal({ onClose, onRefresh }: { onClose: () => void, onRefresh?:
                                 disabled={isProcessing || !amount || ((paymentMethod === 'orange' || paymentMethod === 'bank_ma') && !receipt)}
                                 className={cn(
                                     "w-full py-5 rounded-[24px] font-black uppercase tracking-[0.2em] text-sm flex items-center justify-center gap-3 transition-all",
-                                    isProcessing ? "bg-white/5 text-white/20" : "bg-primary-500 text-white hover:bg-primary-400"
+                                    isProcessing ? "bg-foreground/5 text-foreground/20" : "bg-primary-500 text-white hover:bg-primary-400"
                                 )}
                             >
                                 {isProcessing ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Confirmer le Dépôt"}
@@ -218,14 +218,14 @@ function ManageMethodsModal({ onClose }: { onClose: () => void }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#030014]/80 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-md"
             onClick={onClose}
         >
             <motion.div
                 initial={{ scale: 0.9, y: 20, opacity: 0 }}
                 animate={{ scale: 1, y: 0, opacity: 1 }}
                 exit={{ scale: 0.9, y: 20, opacity: 0 }}
-                className="w-full max-w-lg glass-dark border border-white/10 rounded-[40px] p-8 md:p-10 relative overflow-hidden"
+                className="w-full max-w-lg glass-dark border border-foreground/10 rounded-[40px] p-8 md:p-10 relative overflow-hidden"
                 onClick={e => e.stopPropagation()}
             >
                 <div className="flex items-center gap-4 mb-8">
@@ -233,21 +233,21 @@ function ManageMethodsModal({ onClose }: { onClose: () => void }) {
                         <CreditCard className="w-8 h-8" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black uppercase tracking-tight text-white">Méthodes de Paiement</h2>
-                        <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Gérez vos cartes et comptes</p>
+                        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground">Méthodes de Paiement</h2>
+                        <p className="text-xs font-bold text-foreground/40 uppercase tracking-widest">Gérez vos cartes et comptes</p>
                     </div>
                 </div>
 
                 <div className="space-y-4 mb-8">
                     {methods.map((method) => (
-                        <div key={method.id} className="p-6 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-between group hover:border-white/20 transition-all">
+                        <div key={method.id} className="p-6 rounded-3xl bg-foreground/5 border border-foreground/10 flex items-center justify-between group hover:border-primary-500/20 transition-all">
                             <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-xl bg-white/5 text-white/60">
+                                <div className="p-3 rounded-xl bg-foreground/5 text-muted">
                                     <method.icon className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <p className="text-white font-bold text-sm tracking-wide uppercase">{method.type} •••• {method.last4}</p>
-                                    <p className="text-white/20 text-[10px] font-black uppercase tracking-widest">Expire le {method.exp}</p>
+                                    <p className="text-foreground font-bold text-sm tracking-wide uppercase">{method.type} •••• {method.last4}</p>
+                                    <p className="text-foreground/20 text-[10px] font-black uppercase tracking-widest">Expire le {method.exp}</p>
                                 </div>
                             </div>
                             <button className="text-white/20 hover:text-red-400 p-2 transition-colors">
@@ -256,7 +256,7 @@ function ManageMethodsModal({ onClose }: { onClose: () => void }) {
                         </div>
                     ))}
 
-                    <button className="w-full p-6 rounded-3xl border border-dashed border-white/10 text-white/40 hover:text-white hover:border-white/20 transition-all flex items-center justify-center gap-3 group">
+                    <button className="w-full p-6 rounded-3xl border border-dashed border-foreground/10 text-muted hover:text-foreground hover:border-foreground/20 transition-all flex items-center justify-center gap-3 group">
                         <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         <span className="text-xs font-black uppercase tracking-widest">Ajouter une nouvelle carte</span>
                     </button>
@@ -264,7 +264,7 @@ function ManageMethodsModal({ onClose }: { onClose: () => void }) {
 
                 <button
                     onClick={onClose}
-                    className="w-full py-5 rounded-[24px] bg-white text-black font-black uppercase tracking-[0.2em] text-sm hover:scale-[1.02] transition-all"
+                    className="w-full py-5 rounded-[24px] bg-foreground text-background font-black uppercase tracking-[0.2em] text-sm hover:scale-[1.02] transition-all"
                 >
                     Fermer
                 </button>
@@ -286,14 +286,14 @@ function TransactionDetailsModal({ transaction, onClose, formatPrice }: { transa
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#030014]/80 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-md"
             onClick={onClose}
         >
             <motion.div
                 initial={{ scale: 0.9, y: 20, opacity: 0 }}
                 animate={{ scale: 1, y: 0, opacity: 1 }}
                 exit={{ scale: 0.9, y: 20, opacity: 0 }}
-                className="w-full max-w-md glass-dark border border-white/10 rounded-[40px] p-8 md:p-10 relative overflow-hidden"
+                className="w-full max-w-md glass-dark border border-foreground/10 rounded-[40px] p-8 md:p-10 relative overflow-hidden"
                 onClick={e => e.stopPropagation()}
             >
                 <div className="flex items-center gap-4 mb-8">
@@ -304,29 +304,29 @@ function TransactionDetailsModal({ transaction, onClose, formatPrice }: { transa
                         {transaction.type === 'deposit' ? <ArrowDownLeft className="w-8 h-8" /> : <ArrowUpRight className="w-8 h-8" />}
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black uppercase tracking-tight text-white">Détails de Transaction</h2>
-                        <p className="text-xs font-bold text-white/40 uppercase tracking-widest">ID: {transaction.id}</p>
+                        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground">Détails de Transaction</h2>
+                        <p className="text-xs font-bold text-foreground/40 uppercase tracking-widest">ID: {transaction.id}</p>
                     </div>
                 </div>
 
                 <div className="space-y-6">
-                    <div className="p-6 rounded-3xl bg-white/5 border border-white/10">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-2">Description</div>
-                        <p className="text-white font-bold">{transaction.desc}</p>
+                    <div className="p-6 rounded-3xl bg-foreground/5 border border-foreground/10">
+                        <div className="text-[10px] font-black uppercase tracking-widest text-foreground/20 mb-2">Description</div>
+                        <p className="text-foreground font-bold">{transaction.desc}</p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="p-6 rounded-3xl bg-white/5 border border-white/10">
-                            <div className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-2">Montant</div>
+                        <div className="p-6 rounded-3xl bg-foreground/5 border border-foreground/10">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-foreground/20 mb-2">Montant</div>
                             <p className={cn(
-                                "text-xl font-black tabular-nums",
-                                transaction.type === 'deposit' ? "text-emerald-400" : "text-white"
+                                "text-xl font-black tabular-nums transition-colors duration-300",
+                                transaction.type === 'deposit' ? "text-emerald-400" : "text-foreground"
                             )}>
                                 {formatPrice(transaction.amount)}
                             </p>
                         </div>
-                        <div className="p-6 rounded-3xl bg-white/5 border border-white/10">
-                            <div className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-2">Statut</div>
+                        <div className="p-6 rounded-3xl bg-foreground/5 border border-foreground/10">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-foreground/20 mb-2">Statut</div>
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-emerald-500" />
                                 <span className="text-sm font-black uppercase tracking-widest text-emerald-500">{transaction.status}</span>
@@ -334,20 +334,20 @@ function TransactionDetailsModal({ transaction, onClose, formatPrice }: { transa
                         </div>
                     </div>
 
-                    <div className="p-6 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-between">
+                    <div className="p-6 rounded-3xl bg-foreground/5 border border-foreground/10 flex items-center justify-between">
                         <div>
-                            <div className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-1">Date & Heure</div>
-                            <p className="text-white/60 font-bold text-sm">{transaction.date}</p>
+                            <div className="text-[10px] font-black uppercase tracking-widest text-foreground/20 mb-1">Date & Heure</div>
+                            <p className="text-muted font-bold text-sm">{transaction.date}</p>
                         </div>
                         <div className="text-right">
-                            <div className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-1">Type</div>
-                            <p className="text-white/60 font-bold text-sm uppercase">{transaction.type}</p>
+                            <div className="text-[10px] font-black uppercase tracking-widest text-foreground/20 mb-1">Type</div>
+                            <p className="text-muted font-bold text-sm uppercase">{transaction.type}</p>
                         </div>
                     </div>
 
                     <button
                         onClick={onClose}
-                        className="w-full py-5 rounded-[24px] bg-white text-black font-black uppercase tracking-[0.2em] text-sm hover:scale-[1.02] transition-all"
+                        className="w-full py-5 rounded-[24px] bg-foreground text-background font-black uppercase tracking-[0.2em] text-sm hover:scale-[1.02] transition-all"
                     >
                         Fermer
                     </button>

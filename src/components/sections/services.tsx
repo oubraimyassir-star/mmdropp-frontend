@@ -282,14 +282,14 @@ function OrderModal({ service, onClose, onRefresh, onCreateOrder, formatPrice, c
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#030014]/80 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-md"
             onClick={onClose}
         >
             <motion.div
                 initial={{ scale: 0.9, y: 20, opacity: 0 }}
                 animate={{ scale: 1, y: 0, opacity: 1 }}
                 exit={{ scale: 0.9, y: 20, opacity: 0 }}
-                className="w-full max-w-lg glass-dark border border-white/10 rounded-[40px] p-8 md:p-10 relative overflow-hidden"
+                className="w-full max-w-lg glass-dark border border-foreground/10 rounded-[40px] p-8 md:p-10 relative overflow-hidden"
                 onClick={e => e.stopPropagation()}
             >
                 {orderSuccess ? (
@@ -305,8 +305,8 @@ function OrderModal({ service, onClose, onRefresh, onCreateOrder, formatPrice, c
                             </motion.div>
                             <div className="absolute inset-0 bg-emerald-500/10 blur-2xl rounded-full" />
                         </div>
-                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Paiement Reçu !</h2>
-                        <p className="text-white/60 font-medium">Votre commande pour {service.title} via <strong>{
+                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-2 text-foreground">Paiement Reçu !</h2>
+                        <p className="text-muted font-medium">Votre commande pour {service.title} via <strong>{
                             paymentMethod === 'card' ? 'Carte Bancaire' :
                                 paymentMethod === 'paypal' ? 'PayPal' :
                                     paymentMethod === 'crypto' ? 'Crypto' :
@@ -331,39 +331,39 @@ function OrderModal({ service, onClose, onRefresh, onCreateOrder, formatPrice, c
                                 <div className="absolute inset-0 bg-current opacity-20 blur-xl rounded-full" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black uppercase tracking-tight">{service.title}</h2>
-                                <p className="text-xs font-bold text-white/40 uppercase tracking-widest">{service.platform} Service</p>
+                                <h2 className="text-2xl font-black uppercase tracking-tight text-foreground">{service.title}</h2>
+                                <p className="text-xs font-bold text-foreground/40 uppercase tracking-widest">{service.platform} Service</p>
                             </div>
                         </div>
 
                         <div className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-1">Nom Complet du Client</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-foreground/20 ml-1">Nom Complet du Client</label>
                                 <input
                                     type="text"
                                     placeholder="Votre nom..."
                                     value={customerName}
                                     onChange={(e) => setCustomerName(e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/50 transition-all backdrop-blur-sm"
+                                    className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl py-4 px-6 text-sm font-medium text-foreground placeholder:text-foreground/10 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/50 transition-all backdrop-blur-sm"
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-1">Lien du Profil / Publication</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-foreground/20 ml-1">Lien du Profil / Publication</label>
                                 <input
                                     type="text"
                                     placeholder="https://..."
                                     value={link}
                                     onChange={(e) => setLink(e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white placeholder:text-white/10 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/50 transition-all backdrop-blur-sm"
+                                    className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl py-4 px-6 text-sm font-medium text-foreground placeholder:text-foreground/10 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/50 transition-all backdrop-blur-sm"
                                 />
                             </div>
 
                             {service.min !== service.max && (
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-end mb-1">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-1">Quantité</label>
-                                        <span className="text-[10px] font-bold text-white/40 italic">Min: {service.min} - Max: {service.max}</span>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-foreground/20 ml-1">Quantité</label>
+                                        <span className="text-[10px] font-bold text-foreground/40 italic">Min: {service.min} - Max: {service.max}</span>
                                     </div>
                                     <input
                                         type="number"
@@ -373,7 +373,7 @@ function OrderModal({ service, onClose, onRefresh, onCreateOrder, formatPrice, c
                                             const max = service.max_quantity ?? service.max ?? 1000000;
                                             setQuantity(Math.min(max, Math.max(min, parseInt(e.target.value) || 0)));
                                         }}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/50 transition-all backdrop-blur-sm"
+                                        className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl py-4 px-6 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/50 transition-all backdrop-blur-sm"
                                     />
                                 </div>
                             )}
@@ -386,7 +386,7 @@ function OrderModal({ service, onClose, onRefresh, onCreateOrder, formatPrice, c
                                         placeholder="Votre prix..."
                                         value={sellingPrice}
                                         onChange={(e) => setSellingPrice(e.target.value)}
-                                        className="bg-transparent text-xl font-black text-white focus:outline-none w-full"
+                                        className="bg-transparent text-xl font-black text-foreground focus:outline-none w-full"
                                     />
                                 </div>
                                 <div className="p-6 rounded-3xl bg-emerald-500/5 border border-emerald-500/10 flex flex-col justify-center">
@@ -395,24 +395,24 @@ function OrderModal({ service, onClose, onRefresh, onCreateOrder, formatPrice, c
                                 </div>
                             </div>
 
-                            <div className="p-6 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-between">
+                            <div className="p-6 rounded-3xl bg-foreground/5 border border-foreground/10 flex items-center justify-between transition-colors duration-300">
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-1">Coût SMMADROOP</p>
-                                    <p className="text-2xl font-black text-white tabular-nums">{formatPrice(totalPrice)}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-foreground/20 mb-1">Coût SMMADROOP</p>
+                                    <p className="text-2xl font-black text-foreground tabular-nums transition-colors">{formatPrice(totalPrice)}</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-1">Taux</p>
-                                    <p className="text-sm font-bold text-white/40">{formattedRate}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-foreground/20 mb-1">Taux</p>
+                                    <p className="text-sm font-bold text-foreground/40">{formattedRate}</p>
                                 </div>
                             </div>
 
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-1">Méthode de Paiement</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-foreground/20 ml-1">Méthode de Paiement</label>
                                 <div className="grid grid-cols-2 gap-3">
                                     {[
                                         { id: 'card', name: 'Carte', icon: CreditCard, color: 'text-blue-400' },
                                         { id: 'paypal', name: 'PayPal', icon: Globe, color: 'text-sky-400' },
-                                        { id: 'apple', name: 'Apple / Google', icon: Wallet, color: 'text-white' },
+                                        { id: 'apple', name: 'Apple / Google', icon: Wallet, color: 'text-foreground' },
                                         { id: 'crypto', name: 'Crypto', icon: Coins, color: 'text-orange-400' },
                                     ].map((method) => (
                                         <button
@@ -421,8 +421,8 @@ function OrderModal({ service, onClose, onRefresh, onCreateOrder, formatPrice, c
                                             className={cn(
                                                 "flex items-center gap-3 p-4 rounded-2xl border transition-all",
                                                 paymentMethod === method.id
-                                                    ? "bg-primary-500/10 border-primary-500 text-white"
-                                                    : "bg-white/5 border-white/5 text-white/40 hover:bg-white/10"
+                                                    ? "bg-primary-500/10 border-primary-500 text-foreground"
+                                                    : "bg-foreground/5 border-foreground/5 text-foreground/40 hover:bg-foreground/10"
                                             )}
                                         >
                                             <method.icon className={cn("w-5 h-5", method.color)} />
@@ -440,8 +440,8 @@ function OrderModal({ service, onClose, onRefresh, onCreateOrder, formatPrice, c
                                             className={cn(
                                                 "flex items-center gap-3 p-4 rounded-2xl border transition-all",
                                                 paymentMethod === method.id
-                                                    ? "bg-primary-500/10 border-primary-500 text-white"
-                                                    : "bg-white/5 border-white/5 text-white/40 hover:bg-white/10"
+                                                    ? "bg-primary-500/10 border-primary-500 text-foreground"
+                                                    : "bg-foreground/5 border-foreground/5 text-foreground/40 hover:bg-foreground/10"
                                             )}
                                         >
                                             <method.icon className={cn("w-5 h-5", method.color)} />
@@ -452,7 +452,7 @@ function OrderModal({ service, onClose, onRefresh, onCreateOrder, formatPrice, c
                             </div>
 
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-1">Preuve de Paiement (Reçu Optionnel)</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-foreground/20 ml-1">Preuve de Paiement (Reçu Optionnel)</label>
                                 <div className="relative group">
                                     <input
                                         type="file"
@@ -464,10 +464,10 @@ function OrderModal({ service, onClose, onRefresh, onCreateOrder, formatPrice, c
                                     <label
                                         htmlFor="receipt-upload"
                                         className={cn(
-                                            "flex items-center justify-center gap-3 p-4 rounded-2xl border border-dashed transition-all cursor-pointer",
+                                            "flex items-center justify-center gap-3 p-4 rounded-2xl border border-dashed transition-all cursor-pointer font-sans",
                                             receipt
                                                 ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-400"
-                                                : "bg-white/5 border-white/20 text-white/40 hover:bg-white/10 hover:border-white/40 shadow-inner shadow-black/20"
+                                                : "bg-foreground/5 border-foreground/20 text-foreground/40 hover:bg-foreground/10 hover:border-foreground/40 shadow-inner shadow-black/5"
                                         )}
                                     >
                                         {receipt ? (
@@ -491,7 +491,7 @@ function OrderModal({ service, onClose, onRefresh, onCreateOrder, formatPrice, c
                                 className={cn(
                                     "w-full py-5 rounded-[24px] font-black uppercase tracking-[0.2em] text-sm flex items-center justify-center gap-3 transition-all relative overflow-hidden group",
                                     !link || !customerName || isOrdering
-                                        ? "bg-white/5 text-white/20 cursor-not-allowed border border-white/5"
+                                        ? "bg-foreground/5 text-foreground/20 cursor-not-allowed border border-foreground/5"
                                         : "bg-primary-500 text-white hover:bg-primary-400 border border-primary-400 shadow-2xl shadow-primary-500/20"
                                 )}
                             >
@@ -513,7 +513,7 @@ function OrderModal({ service, onClose, onRefresh, onCreateOrder, formatPrice, c
 
                         <button
                             onClick={onClose}
-                            className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/5 text-white/20 hover:text-white transition-all"
+                            className="absolute top-6 right-6 p-2 rounded-full hover:bg-foreground/5 text-foreground/20 hover:text-foreground transition-all"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -582,7 +582,7 @@ export function ServicesCatalog({ searchQuery = '', onRefresh, onCreateOrder, fo
                             "px-6 py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap border",
                             activeCategory === category
                                 ? "bg-primary-500 text-white border-primary-500 shadow-lg shadow-primary-500/20"
-                                : "bg-white/5 text-white/40 border-white/5 hover:bg-white/10 hover:text-white"
+                                : "bg-foreground/5 text-muted border-foreground/5 hover:bg-foreground/10 hover:text-foreground"
                         )}
                     >
                         {category}
@@ -601,15 +601,15 @@ export function ServicesCatalog({ searchQuery = '', onRefresh, onCreateOrder, fo
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
                                 transition={{ duration: 0.2 }}
-                                className="group p-8 rounded-[40px] glass-dark border border-white/5 hover:border-primary-500/30 transition-all flex flex-col h-full bg-white/[0.02]"
+                                className="group p-8 rounded-[40px] glass-dark border border-foreground/5 hover:border-primary-500/30 transition-all flex flex-col h-full bg-foreground/[0.02]"
                             >
                                 <div className="flex items-center justify-between mb-6">
                                     <div className={cn("p-4 rounded-2xl transition-transform group-hover:scale-110 duration-300", service.bg, service.color)}>
                                         {service.icon && <service.icon className="w-8 h-8" />}
                                     </div>
                                     <div className="text-right">
-                                        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-1">Prix</div>
-                                        <div className="text-lg font-black text-white">
+                                        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-1">Prix</div>
+                                        <div className="text-lg font-black text-foreground transition-colors duration-300">
                                             {(() => {
                                                 if (typeof service.price === 'number') {
                                                     return `${formatPrice(service.price)} / ${service.unit || '1000'}`;
@@ -623,24 +623,24 @@ export function ServicesCatalog({ searchQuery = '', onRefresh, onCreateOrder, fo
                                     </div>
                                 </div>
 
-                                <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-tight group-hover:text-primary-400 transition-colors">
+                                <h3 className="text-xl font-bold text-foreground mb-2 uppercase tracking-tight group-hover:text-primary-400 transition-colors duration-300">
                                     {service.title}
                                 </h3>
                                 <div className="flex items-center gap-2 mb-3">
-                                    <span className={cn("text-[9px] font-black uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-white/5", service.color)}>
+                                    <span className={cn("text-[9px] font-black uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-foreground/5", service.color)}>
                                         {service.platform}
                                     </span>
-                                    <span className="text-[9px] font-black uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-white/5 text-white/40">
+                                    <span className="text-[9px] font-black uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-foreground/5 text-muted">
                                         ID: {service.id}
                                     </span>
                                 </div>
-                                <p className="text-sm text-white/40 font-medium leading-relaxed mb-8 flex-grow">
+                                <p className="text-sm text-muted font-medium leading-relaxed mb-8 flex-grow">
                                     {service.description}
                                 </p>
 
                                 <div className="space-y-3 mb-8">
                                     {(service.features || []).map((feature, idx) => (
-                                        <div key={idx} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/30">
+                                        <div key={idx} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted transition-colors">
                                             <div className="w-1.5 h-1.5 rounded-full bg-primary-500/40" />
                                             {feature}
                                         </div>
@@ -649,7 +649,7 @@ export function ServicesCatalog({ searchQuery = '', onRefresh, onCreateOrder, fo
 
                                 <button
                                     onClick={() => setSelectedService(service)}
-                                    className="w-full py-4 bg-white/5 hover:bg-primary-500 text-white font-black rounded-2xl transition-all uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 group/btn border border-white/5 hover:border-primary-400 shadow-xl hover:shadow-primary-500/20"
+                                    className="w-full py-4 bg-foreground/5 hover:bg-primary-500 text-foreground hover:text-white font-black rounded-2xl transition-all uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 group/btn border border-foreground/5 hover:border-primary-400 shadow-xl hover:shadow-primary-500/20"
                                 >
                                     Commander Maintenant
                                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -660,11 +660,11 @@ export function ServicesCatalog({ searchQuery = '', onRefresh, onCreateOrder, fo
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                    <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
-                        <Search className="w-10 h-10 text-white/10" />
+                    <div className="w-20 h-20 rounded-full bg-foreground/5 flex items-center justify-center mb-6">
+                        <Search className="w-10 h-10 text-foreground/10" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">Aucun service trouvé</h3>
-                    <p className="text-white/40 max-w-md">Nous n'avons trouvé aucun service correspondant à votre recherche "{searchQuery}" dans cette catégorie.</p>
+                    <h3 className="text-xl font-bold text-foreground mb-2">Aucun service trouvé</h3>
+                    <p className="text-muted max-w-md">Nous n'avons trouvé aucun service correspondant à votre recherche "{searchQuery}" dans cette catégorie.</p>
                     <button
                         onClick={() => { setActiveCategory("Tous"); }}
                         className="mt-8 text-primary-400 font-bold uppercase tracking-widest text-xs hover:text-primary-300 transition-colors"

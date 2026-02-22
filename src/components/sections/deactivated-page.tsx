@@ -5,9 +5,6 @@ import { useTheme } from '../../lib/theme-context';
 export function DeactivatedPage({ onLogout }: { onLogout: () => void }) {
     const { theme } = useTheme();
 
-    const socialLinks = [
-        { id: '1', icon: MessageCircle, label: 'WhatsApp', href: "https://wa.me/212722080441" }
-    ];
 
     return (
         <div className={`min-h-screen flex items-center justify-center p-6 ${theme === 'dark' ? 'bg-black text-white' : 'bg-white text-black'}`}>
