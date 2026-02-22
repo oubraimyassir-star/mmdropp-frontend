@@ -289,7 +289,7 @@ function OrderModal({ service, onClose, onRefresh, onCreateOrder, formatPrice, c
                 initial={{ scale: 0.9, y: 20, opacity: 0 }}
                 animate={{ scale: 1, y: 0, opacity: 1 }}
                 exit={{ scale: 0.9, y: 20, opacity: 0 }}
-                className="w-full max-w-lg glass-dark border border-foreground/10 rounded-[40px] p-8 md:p-10 relative overflow-hidden"
+                className="w-full max-w-lg glass-dark border border-foreground/10 rounded-[40px] p-8 md:p-10 relative max-h-[90vh] overflow-y-auto custom-scrollbar"
                 onClick={e => e.stopPropagation()}
             >
                 {orderSuccess ? (
