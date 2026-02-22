@@ -353,7 +353,7 @@ export function SignInCard({ onBack, onSuccess, t, initialMode = 'login' }: { on
                                                         className="flex items-center gap-3 px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-2xl shadow-emerald-500/20 active:scale-95"
                                                     >
                                                         <MessageCircle className="w-5 h-5" />
-                                                        Veuillez contacter votre responsable de compte
+                                                        Veuillez contacter votre responsable de compte (V4.2)
                                                     </a>
                                                 </div>
                                             )}
