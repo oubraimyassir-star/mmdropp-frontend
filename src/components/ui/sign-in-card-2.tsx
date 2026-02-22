@@ -345,15 +345,15 @@ export function SignInCard({ onBack, onSuccess, t, initialMode = 'login' }: { on
                                             <p className="text-xs text-red-500 font-medium text-center mt-2">{error}</p>
 
                                             {error.toLowerCase().includes("activation") && (
-                                                <div className="flex justify-center mt-4">
+                                                <div className="flex justify-center mt-5">
                                                     <a
                                                         href="https://wa.me/212722080441"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_10px_20px_rgba(16,185,129,0.2)] group"
+                                                        className="flex items-center gap-3 px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-2xl shadow-emerald-500/20 active:scale-95"
                                                     >
-                                                        <MessageCircle className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                                        S'activer via WhatsApp
+                                                        <MessageCircle className="w-5 h-5" />
+                                                        Veuillez contacter votre responsable de compte
                                                     </a>
                                                 </div>
                                             )}
