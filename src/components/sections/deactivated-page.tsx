@@ -27,17 +27,17 @@ export function DeactivatedPage({ onLogout }: { onLogout: () => void }) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="text-5xl lg:text-7xl font-black uppercase tracking-tighter mb-6"
+                    className="text-6xl lg:text-8xl font-black uppercase tracking-tighter mb-6 leading-[0.9]"
                 >
                     Compte <br />
-                    <span className="text-red-500">Désactivé</span>
+                    <span className="text-gradient">Désactivé</span>
                 </motion.h1>
 
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="text-lg text-foreground/60 mb-12 max-w-lg mx-auto font-medium"
+                    className="text-lg md:text-xl text-foreground/60 mb-12 max-w-lg mx-auto font-medium leading-relaxed"
                 >
                     Désolé, votre compte <span className="text-foreground font-black tracking-tight">SMMADROOP</span> a été suspendu ou désactivé par l'administrateur.
                 </motion.p>

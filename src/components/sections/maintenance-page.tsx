@@ -26,17 +26,17 @@ export function MaintenancePage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="text-5xl lg:text-7xl font-black uppercase tracking-tighter mb-6"
+                    className="text-6xl lg:text-8xl font-black uppercase tracking-tighter mb-6 leading-[0.9]"
                 >
                     Maintenance <br />
-                    <span className="text-red-500">En Cours</span>
+                    <span className="text-gradient">En Cours</span>
                 </motion.h1>
 
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="text-lg text-foreground/60 mb-12 max-w-lg mx-auto font-medium"
+                    className="text-lg md:text-xl text-foreground/60 mb-12 max-w-lg mx-auto font-medium leading-relaxed"
                 >
                     Nous effectuons actuellement des mises à jour importantes pour améliorer votre expérience sur <span className="text-foreground font-black tracking-tight">SMMADROOP</span>.
                 </motion.p>

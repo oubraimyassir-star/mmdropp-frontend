@@ -198,11 +198,11 @@ export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refr
 
             <div className="flex flex-grow relative">
                 {/* Desktop Sidebar */}
-                <aside className="hidden lg:block w-72 border-r border-foreground/5 bg-foreground/[0.02] backdrop-blur-xl sticky h-[calc(100vh-var(--banner-height,0px))] top-[var(--banner-height,0px)] overflow-y-auto">
+                <aside className="hidden lg:block w-80 border-r border-foreground/5 bg-foreground/[0.02] backdrop-blur-xl sticky h-[calc(100vh-var(--banner-height,0px))] top-[var(--banner-height,0px)] overflow-y-auto z-40">
                     <SidebarContent />
                 </aside>
 
-                <div className="flex-grow flex flex-col min-w-0">
+                <div className="flex-grow flex flex-col min-w-0 lg:pl-6">
                     {/* Header */}
                     <nav
                         className="border-b border-foreground/5 bg-foreground/[0.02] backdrop-blur-xl sticky top-0 z-30 transition-all duration-300 h-20 flex items-center"
