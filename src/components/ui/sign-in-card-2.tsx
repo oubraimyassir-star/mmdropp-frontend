@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, MessageCircle } from 'lucide-react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { API_BASE_URL } from '@/config';
 import { Button } from '@/components/ui/button';
@@ -341,7 +341,27 @@ export function SignInCard({ onBack, onSuccess, t, initialMode = 'login' }: { on
                                     </Button>
 
                                     {error && (
-                                        <p className="text-xs text-red-500 font-medium text-center mt-2">{error}</p>
+                                        <div className="space-y-4">
+                                            <p className="text-xs text-red-500 font-medium text-center mt-2">{error}</p>
+
+                                            {error.includes("activation par l'admin") && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    className="flex justify-center"
+                                                >
+                                                    <a
+                                                        href="https://wa.me/212722080441"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded-xl text-xs font-bold transition-all border border-emerald-500/20 group animate-pulse hover:animate-none"
+                                                    >
+                                                        <MessageCircle className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                                        Contacter le Support WhatsApp
+                                                    </a>
+                                                </motion.div>
+                                            )}
+                                        </div>
                                     )}
                                 </form>
 
