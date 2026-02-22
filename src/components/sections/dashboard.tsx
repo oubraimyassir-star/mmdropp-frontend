@@ -83,7 +83,7 @@ interface DashboardProps {
     lang: string;
 }
 
-export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refreshData, onCreateOrder, formatPrice, onOpenAdmin, currency, currencyRate, lang }: DashboardProps) {
+export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refreshData, onCreateOrder, formatPrice, onOpenAdmin, currency, currencyRate }: DashboardProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('Dashboard');
     const [searchQuery, setSearchQuery] = useState('');
@@ -122,7 +122,7 @@ export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refr
                 {isMobile && (
                     <button
                         onClick={() => setIsMenuOpen(false)}
-                        className="p-2 rounded-lg hover:bg-white/5 text-white/40"
+                        className="p-2 rounded-lg hover:bg-foreground/5 text-foreground/40"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -236,7 +236,7 @@ export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refr
                                         className="w-full md:w-80 bg-foreground/5 border border-foreground/10 rounded-2xl py-2.5 pl-11 pr-4 text-sm font-medium text-foreground placeholder:text-foreground/20 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/50 transition-all backdrop-blur-sm"
                                     />
                                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-0 group-focus-within:opacity-100 transition-opacity">
-                                        <span className="text-[10px] font-black text-white/20 bg-white/5 px-1.5 py-0.5 rounded border border-white/10">ESC</span>
+                                        <span className="text-[10px] font-black text-foreground/20 bg-foreground/5 px-1.5 py-0.5 rounded border border-foreground/10 uppercase">ESC</span>
                                     </div>
                                 </div>
                             </div>
@@ -285,37 +285,7 @@ export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refr
 
                     {/* Main Content */}
                     <main className="flex-grow p-6 lg:p-10 max-w-7xl mx-auto w-full">
-                        {!user?.is_active && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="mb-8 p-6 rounded-[2rem] bg-red-500/10 border border-red-500/20 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative group"
-                            >
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 blur-[80px] -mr-32 -mt-32" />
-                                <div className="flex items-center gap-5 relative z-10">
-                                    <div className="w-14 h-14 rounded-2xl bg-red-500/20 flex items-center justify-center border border-red-500/30 group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(239,68,68,0.2)]">
-                                        <X className="w-7 h-7 text-red-400" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-black uppercase tracking-tight text-white mb-1">
-                                            {lang === 'fr' ? 'Compte Non Activé' : 'Account Not Activated'}
-                                        </h3>
-                                        <p className="text-red-400/80 text-sm font-medium">
-                                            {lang === 'fr'
-                                                ? "Votre compte est en attente d'activation par l'administrateur. Veuillez patienter ou contacter le support."
-                                                : "Your account is pending activation by the administrator. Please wait or contact support."
-                                            }
-                                        </p>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => window.open('https://wa.me/your-support-number', '_blank')}
-                                    className="px-8 py-3.5 bg-red-500 hover:bg-red-400 text-white font-bold rounded-2xl uppercase tracking-widest text-xs transition-all hover:scale-105 active:scale-95 shadow-[0_10px_20px_rgba(239,68,68,0.2)] relative z-10"
-                                >
-                                    {lang === 'fr' ? 'Contacter le Support' : 'Contact Support'}
-                                </button>
-                            </motion.div>
-                        )}
+
                         {activeTab === 'Profile' ? (
                             <motion.div
                                 key="profile"
@@ -381,7 +351,7 @@ export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refr
                                     >
                                         {activeTab}
                                     </motion.h1>
-                                    <p className="text-white/40 font-medium italic">
+                                    <p className="text-muted font-medium italic">
                                         {activeTab === 'Dashboard'
                                             ? "Analysez vos performances et optimisez votre croissance SMMA."
                                             : `Gérez vos ${activeTab.toLowerCase()} en toute simplicité.`}
@@ -395,27 +365,27 @@ export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refr
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0 }}
-                                        className="p-6 rounded-3xl glass-dark border border-white/5 hover:border-blue-500/30 transition-all group"
+                                        className="p-6 rounded-3xl glass-dark border border-foreground/5 hover:border-blue-500/30 transition-all group bg-foreground/[0.02]"
                                     >
                                         <div className="flex items-center gap-4 mb-4">
-                                            <div className="p-3 rounded-2xl bg-white/5 group-hover:scale-110 transition-transform text-blue-400">
+                                            <div className="p-3 rounded-2xl bg-foreground/5 group-hover:scale-110 transition-transform text-blue-400">
                                                 <LayoutDashboard className="w-6 h-6" />
                                             </div>
-                                            <span className="text-white/40 text-sm font-bold uppercase tracking-widest">Commandes</span>
+                                            <span className="text-muted text-sm font-bold uppercase tracking-widest">Commandes</span>
                                         </div>
                                         <div className="text-3xl font-black tabular-nums mb-4">{dashboardData.orderCount}</div>
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-1.5">
                                                     <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
-                                                    <span className="text-[11px] font-bold text-white/40 uppercase tracking-wider">Confirmées</span>
+                                                    <span className="text-[11px] font-bold text-muted uppercase tracking-wider">Confirmées</span>
                                                 </div>
                                                 <span className="text-emerald-400 font-black text-sm tabular-nums">{dashboardData.completedCount ?? '0'}</span>
                                             </div>
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-1.5">
                                                     <span className="w-2 h-2 rounded-full bg-red-400 shrink-0" />
-                                                    <span className="text-[11px] font-bold text-white/40 uppercase tracking-wider">Annulées</span>
+                                                    <span className="text-[11px] font-bold text-muted uppercase tracking-wider">Annulées</span>
                                                 </div>
                                                 <span className="text-red-400 font-black text-sm tabular-nums">{dashboardData.cancelledCount ?? '0'}</span>
                                             </div>
@@ -429,13 +399,13 @@ export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refr
                                             initial={{ opacity: 0, y: 20 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ delay: (i + 1) * 0.1 }}
-                                            className="p-6 rounded-3xl glass-dark border border-white/5 hover:border-primary-500/30 transition-all group"
+                                            className="p-6 rounded-3xl glass-dark border border-foreground/5 hover:border-primary-500/30 transition-all group bg-foreground/[0.02]"
                                         >
                                             <div className="flex items-center gap-4 mb-4">
-                                                <div className={cn("p-3 rounded-2xl bg-white/5 group-hover:scale-110 transition-transform", stat.color)}>
+                                                <div className={cn("p-3 rounded-2xl bg-foreground/5 group-hover:scale-110 transition-transform", stat.color)}>
                                                     <stat.icon className="w-6 h-6" />
                                                 </div>
-                                                <span className="text-white/40 text-sm font-bold uppercase tracking-widest">{stat.label}</span>
+                                                <span className="text-muted text-sm font-bold uppercase tracking-widest">{stat.label}</span>
                                             </div>
                                             <div className="text-3xl font-black tabular-nums">{stat.value}</div>
                                         </motion.div>
@@ -447,12 +417,12 @@ export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refr
                                     <motion.div
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="p-8 rounded-[40px] glass-dark border border-white/5 bg-white/2"
+                                        className="p-8 rounded-[40px] glass-dark border border-foreground/5 bg-foreground/[0.02]"
                                     >
                                         <div className="flex items-center justify-between mb-8">
                                             <div>
-                                                <h2 className="text-xl font-bold uppercase tracking-tight text-white">Croissance des Revenus</h2>
-                                                <p className="text-xs text-white/40 font-medium">Flux mensuel du chiffre d'affaires</p>
+                                                <h2 className="text-xl font-bold uppercase tracking-tight text-foreground">Croissance des Revenus</h2>
+                                                <p className="text-xs text-muted font-medium">Flux mensuel du chiffre d'affaires</p>
                                             </div>
                                             <div className="p-3 rounded-2xl bg-purple-500/10">
                                                 <TrendingUp className="w-6 h-6 text-purple-400" />
@@ -465,12 +435,12 @@ export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refr
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.1 }}
-                                        className="p-8 rounded-[40px] glass-dark border border-white/5 bg-white/2"
+                                        className="p-8 rounded-[40px] glass-dark border border-foreground/5 bg-foreground/[0.02]"
                                     >
                                         <div className="flex items-center justify-between mb-8">
                                             <div>
-                                                <h2 className="text-xl font-bold uppercase tracking-tight text-white">Activité en Temps Réel</h2>
-                                                <p className="text-xs text-white/40 font-medium">Session utilisateurs (dernières 24h)</p>
+                                                <h2 className="text-xl font-bold uppercase tracking-tight text-foreground">Activité en Temps Réel</h2>
+                                                <p className="text-xs text-muted font-medium">Session utilisateurs (dernières 24h)</p>
                                             </div>
                                             <div className="p-3 rounded-2xl bg-emerald-500/10">
                                                 <Users className="w-6 h-6 text-emerald-400" />
@@ -483,11 +453,11 @@ export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refr
                                 {/* Order History Section */}
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                     <div className="lg:col-span-2">
-                                        <div className="p-8 rounded-[40px] glass-dark border border-white/5 min-h-[300px]">
+                                        <div className="p-8 rounded-[40px] glass-dark border border-foreground/5 min-h-[300px] bg-foreground/[0.02]">
                                             <div className="flex items-center justify-between mb-8">
                                                 <div>
-                                                    <h3 className="text-xl font-bold uppercase tracking-tight">Historique des Commandes</h3>
-                                                    <p className="text-xs text-white/40 font-medium">Vos 5 activités les plus récentes</p>
+                                                    <h3 className="text-xl font-bold uppercase tracking-tight text-foreground">Historique des Commandes</h3>
+                                                    <p className="text-xs text-muted font-medium">Vos 5 activités les plus récentes</p>
                                                 </div>
                                                 <button className="text-[10px] font-black uppercase tracking-widest text-primary-400 hover:text-primary-300 transition-colors">
                                                     Tout voir
@@ -497,26 +467,26 @@ export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refr
                                             <div className="overflow-x-auto">
                                                 <table className="w-full">
                                                     <thead>
-                                                        <tr className="border-b border-white/5">
-                                                            <th className="text-left py-4 text-[10px] font-black uppercase tracking-widest text-white/20">Service</th>
-                                                            <th className="text-left py-4 text-[10px] font-black uppercase tracking-widest text-white/20">Date</th>
-                                                            <th className="text-left py-4 text-[10px] font-black uppercase tracking-widest text-white/20">Montant</th>
-                                                            <th className="text-right py-4 text-[10px] font-black uppercase tracking-widest text-white/20">Statut</th>
+                                                        <tr className="border-b border-foreground/10">
+                                                            <th className="text-left py-4 text-[10px] font-black uppercase tracking-widest text-foreground/20">Service</th>
+                                                            <th className="text-left py-4 text-[10px] font-black uppercase tracking-widest text-foreground/20">Date</th>
+                                                            <th className="text-left py-4 text-[10px] font-black uppercase tracking-widest text-foreground/20">Montant</th>
+                                                            <th className="text-right py-4 text-[10px] font-black uppercase tracking-widest text-foreground/20">Statut</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody className="divide-y divide-white/5">
+                                                    <tbody className="divide-y divide-foreground/5">
                                                         {dashboardData.orders.map((order, i) => (
                                                             <tr key={i} className="group hover:bg-white/[0.02] transition-colors">
                                                                 <td className="py-4">
                                                                     <div className="flex items-center gap-3">
-                                                                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
-                                                                            <ShoppingBag className="w-4 h-4 text-white/40 group-hover:text-primary-400 transition-colors" />
+                                                                        <div className="w-8 h-8 rounded-lg bg-foreground/5 flex items-center justify-center">
+                                                                            <ShoppingBag className="w-4 h-4 text-foreground/40 group-hover:text-primary-400 transition-colors" />
                                                                         </div>
-                                                                        <span className="text-sm font-bold text-white/80">{order.name}</span>
+                                                                        <span className="text-sm font-bold text-foreground/80">{order.name}</span>
                                                                     </div>
                                                                 </td>
-                                                                <td className="py-4 text-xs font-medium text-white/40">{order.date}</td>
-                                                                <td className="py-4 text-sm font-black text-white">{formatPrice(order.cost)}</td>
+                                                                <td className="py-4 text-xs font-medium text-muted">{order.date}</td>
+                                                                <td className="py-4 text-sm font-black text-foreground">{formatPrice(order.cost)}</td>
                                                                 <td className="py-4 text-right">
                                                                     <span className={cn("px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest", order.bg, order.color)}>
                                                                         {order.status}
@@ -530,7 +500,7 @@ export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refr
                                         </div>
                                     </div>
 
-                                    <div className="p-8 rounded-[40px] glass-dark border border-white/5 flex flex-col h-full min-h-[350px]">
+                                    <div className="p-8 rounded-[40px] glass-dark border border-foreground/5 flex flex-col h-full min-h-[350px] bg-foreground/[0.02]">
                                         <DashboardCalendar />
                                     </div>
                                 </div>
@@ -556,7 +526,7 @@ export function Dashboard({ onLogout, t, user, onUpdateUser, dashboardData, refr
                             animate={{ x: 0 }}
                             exit={{ x: '-100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed left-0 top-0 bottom-0 w-72 bg-black border-r border-white/10 z-[70] lg:hidden"
+                            className="fixed left-0 top-0 bottom-0 w-72 bg-background border-r border-foreground/10 z-[70] lg:hidden"
                         >
                             <SidebarContent isMobile />
                         </motion.aside>

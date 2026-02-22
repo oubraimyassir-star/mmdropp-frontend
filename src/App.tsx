@@ -1136,7 +1136,7 @@ export default function App() {
       {showOnboarding ? (
         <OnboardingFlow onComplete={handleOnboardingComplete} />
       ) : isLoggedIn ? (
-        userData.is_active === false && userData.role !== 'admin' ? (
+        !userData.is_active && userData.role !== 'admin' ? (
           <DeactivatedPage onLogout={handleLogout} />
         ) : userData.role === 'admin' && showAdminDashboard ? (
           showManagerView ? (
