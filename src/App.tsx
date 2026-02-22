@@ -32,6 +32,8 @@ import { AdminDashboard } from './components/sections/admin-dashboard';
 import { ManagerDashboard } from './components/sections/manager-dashboard';
 import { OnboardingFlow } from './components/sections/onboarding';
 import { SignInCard } from './components/ui/sign-in-card-2';
+import { MaintenancePage } from './components/sections/maintenance-page';
+import { DeactivatedPage } from './components/sections/deactivated-page';
 import { API_BASE_URL } from './config';
 
 // --- Components ---
@@ -605,8 +607,32 @@ export default function App() {
       }
     } catch (error) {
       console.error("Error fetching billing data:", error);
+      if (error instanceof Error && error.message.includes('503')) {
+        setIsMaintenance(true);
+      }
     }
-  }, []);
+  }, [userData]); // Added userData dependency for role check inside maintenance check if needed
+
+  useEffect(() => {
+    const checkMaintenance = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/services`);
+        if (res.status === 503) {
+          // If 503, only show maintenance if user is NOT admin
+          if (userData?.role !== 'admin') {
+            setIsMaintenance(true);
+          }
+        } else {
+          setIsMaintenance(false);
+        }
+      } catch (e) {
+        console.error("Maintenance check failed", e);
+      }
+    };
+    checkMaintenance();
+    const inv = setInterval(checkMaintenance, 30000);
+    return () => clearInterval(inv);
+  }, [userData?.role]);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -639,7 +665,6 @@ export default function App() {
         return newData;
       });
 
-      // Handle Classic Login Token
       if (extraData?.access_token) {
         localStorage.setItem('auth_token', extraData.access_token);
         setUserData(prev => {
@@ -654,26 +679,19 @@ export default function App() {
           localStorage.setItem('user_data', JSON.stringify(newData));
           return newData;
         });
-        fetchDashboardData();
-      }
-      // Backend Authentication for Google
-      else if (extraData?.googleToken) {
+        await fetchDashboardData();
+      } else if (extraData?.googleToken) {
         try {
           const response = await fetch(`${API_BASE_URL}/auth/google`, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              token: extraData.googleToken
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: extraData.googleToken })
           });
 
           if (response.ok) {
             const data = await response.json();
             if (data.access_token) {
               localStorage.setItem('auth_token', data.access_token);
-              // Merge backend user data
               if (data.user) {
                 setUserData(prev => {
                   const newData: UserData = {
@@ -687,27 +705,18 @@ export default function App() {
                   return newData;
                 });
               }
-              // Immediately fetch fresh data
-              fetchDashboardData();
+              await fetchDashboardData();
             }
-          } else {
-            console.error("Backend Google Auth failed");
           }
         } catch (error) {
-          console.error("Error connecting to backend for Google Auth", error);
+          console.error("Google Auth fallback error", error);
         }
       } else {
-        // Standard login - fetch profile immediately to get role
-        fetchDashboardData();
+        await fetchDashboardData();
       }
 
-      const backendOnboardingCompleted = extraData?.onboarding_completed ?? true;
-      const isCompleted = localStorage.getItem(`onboarding_completed_${email}`) === 'true' || backendOnboardingCompleted === true;
-
-      const userRole = (extraData?.role || 'user');
-
-      // Only show onboarding if not marked as completed in localStorage OR backend
-      // AND user is NOT an admin
+      const isCompleted = localStorage.getItem(`onboarding_completed_${email}`) === 'true' || extraData?.onboarding_completed === true;
+      const userRole = extraData?.role || (email === 'oubraimyassir@gmail.com' ? 'admin' : 'user');
       if (!isCompleted && userRole !== 'admin') {
         setShowOnboarding(true);
       }
@@ -1127,7 +1136,9 @@ export default function App() {
       {showOnboarding ? (
         <OnboardingFlow onComplete={handleOnboardingComplete} />
       ) : isLoggedIn ? (
-        userData.role === 'admin' && showAdminDashboard ? (
+        userData.is_active === false && userData.role !== 'admin' ? (
+          <DeactivatedPage onLogout={handleLogout} />
+        ) : userData.role === 'admin' && showAdminDashboard ? (
           showManagerView ? (
             <ManagerDashboard onLogout={handleLogout} user={userData} />
           ) : (
