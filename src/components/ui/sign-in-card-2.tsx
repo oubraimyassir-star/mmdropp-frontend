@@ -344,22 +344,18 @@ export function SignInCard({ onBack, onSuccess, t, initialMode = 'login' }: { on
                                         <div className="space-y-4">
                                             <p className="text-xs text-red-500 font-medium text-center mt-2">{error}</p>
 
-                                            {error.includes("activation par l'admin") && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: 10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    className="flex justify-center"
-                                                >
+                                            {error.toLowerCase().includes("activation") && (
+                                                <div className="flex justify-center mt-4">
                                                     <a
                                                         href="https://wa.me/212722080441"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded-xl text-xs font-bold transition-all border border-emerald-500/20 group animate-pulse hover:animate-none"
+                                                        className="flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_10px_20px_rgba(16,185,129,0.2)] group"
                                                     >
                                                         <MessageCircle className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                                        Contacter le Support WhatsApp
+                                                        S'activer via WhatsApp
                                                     </a>
-                                                </motion.div>
+                                                </div>
                                             )}
                                         </div>
                                     )}
