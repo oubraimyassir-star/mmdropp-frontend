@@ -215,6 +215,7 @@ export interface UserData {
   };
   role?: 'user' | 'admin' | 'management';
   is_active?: boolean;
+  onboarding_completed?: boolean;
 }
 
 interface UserDashboardData {
@@ -646,7 +647,8 @@ export default function App() {
             ...prev,
             ...extraData,
             role: (extraData.role || (email === 'admin@smmadroop.com' ? 'admin' : 'user')) as 'admin' | 'user' | 'management',
-            is_active: extraData.is_active ?? true
+            is_active: extraData.is_active ?? true,
+            onboarding_completed: extraData.onboarding_completed ?? false
           };
           delete (newData as any).access_token;
           localStorage.setItem('user_data', JSON.stringify(newData));
@@ -678,7 +680,8 @@ export default function App() {
                     ...prev,
                     ...data.user,
                     role: (data.user.role || 'user') as 'admin' | 'user' | 'management',
-                    is_active: data.user.is_active ?? true
+                    is_active: data.user.is_active ?? true,
+                    onboarding_completed: data.user.onboarding_completed ?? false
                   };
                   localStorage.setItem('user_data', JSON.stringify(newData));
                   return newData;
@@ -698,10 +701,14 @@ export default function App() {
         fetchDashboardData();
       }
 
-      const isCompleted = localStorage.getItem(`onboarding_completed_${email}`);
-      // Only show onboarding if not marked as completed in localStorage 
-      // AND we are in signup mode (or if backend says not completed, handled in profile sync)
-      if (mode === 'signup' && !isCompleted) {
+      const backendOnboardingCompleted = extraData?.onboarding_completed ?? true;
+      const isCompleted = localStorage.getItem(`onboarding_completed_${email}`) === 'true' || backendOnboardingCompleted === true;
+
+      const userRole = (extraData?.role || 'user');
+
+      // Only show onboarding if not marked as completed in localStorage OR backend
+      // AND user is NOT an admin
+      if (!isCompleted && userRole !== 'admin') {
         setShowOnboarding(true);
       }
     }
